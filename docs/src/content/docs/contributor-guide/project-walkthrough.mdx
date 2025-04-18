@@ -38,3 +38,24 @@ We now go to the Dashboard and add a Server. We introduce the server information
       The 8080 port on the server will be mapped to 8080 on our local machine.
 - After logging in , we paste that command in the terminal, and we install the SSH key for the user.
 - We can now go to Alfredo dashboard, and continue the workflow.
+
+### Servers Page
+
+- Manage our inventory of servers
+
+### Spaces
+
+- On a default server, we have an `alfredo` user.
+
+In `/home/alfredo/spaces/myblog` => git
+In `/home/alfredo/spaces/analytics` => umami
+In `/home/alfredo/spaces/error-tracking` => sentry/glitchtip
+
+- Each workspace is a folder with a name, and it contains the following:
+    - `alfredo.yaml` file
+    - `repo` folder
+    - `builds` binary
+    - `data` config file
+    - `stack` compose project
+
+
