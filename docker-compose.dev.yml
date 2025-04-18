@@ -11,8 +11,8 @@ x-laravel-app: &laravel-base
             GROUP_ID: ${GROUP_ID:-20}
     environment:
         SSL_MODE: "off"
-        AUTORUN_LARAVEL_STORAGE_LINK: true
-        AUTORUN_LARAVEL_MIGRATION: false
+        AUTORUN_LARAVEL_STORAGE_LINK: "true"
+        AUTORUN_LARAVEL_MIGRATION: "false"
     networks:
         - web
     extra_hosts:
