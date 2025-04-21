@@ -8,6 +8,7 @@ use App\Filament\Resources\ServerResource\RelationManagers;
 use App\Models\Server;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -68,6 +69,7 @@ class ServerResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(fn($record) => ServerResource::getUrl('view', ['record' => $record]))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -93,7 +95,7 @@ class ServerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -109,12 +111,23 @@ class ServerResource extends Resource
         ];
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ViewServer::class,
+            Pages\ManageSpaces::class,
+        ]);
+    }
+
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListServers::route('/'),
+            'view' => Pages\ViewServer::route('/{record}'),
             'create' => Pages\CreateServer::route('/create'),
             'edit' => Pages\EditServer::route('/{record}/edit'),
+            'spaces' => Pages\ManageSpaces::route('/{record}/spaces'),
         ];
     }
 }
