@@ -34,24 +34,7 @@ class CheckSSHConnection extends Command
     {
         $server = Server::find(1);
 
-        $user = $server->username;
-        $hostname = $server->public_ipv4;
-        $port = $server->ssh_port;
-        $key = $server->private_key;
 
-        // Load the key properly
-        $keyObject = \phpseclib3\Crypt\PublicKeyLoader::load($key);
-
-        $ssh = new SSH2($hostname, $port);
-
-        $ssh->isConnected();
-
-        if (! $ssh->login($user, $keyObject)) {
-            throw new \Exception('Login failed using key');
-        }
-
-        // Store the output in a variable
-        $output = $ssh->exec('pwd');
 
         // Display the output
         $this->line("Command output: " . $output);
