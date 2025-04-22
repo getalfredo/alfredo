@@ -1,7 +1,5 @@
 <x-filament-panels::page>
     <div class="">
-
-        Loool
-
+        @livewire(\App\Livewire\SpaceList::class, ['server' => $record,])
     </div>
 </x-filament-panels::page>
