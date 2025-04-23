@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ServerResource\Pages;
 use App\Actions\CheckConnection;
 use App\Actions\InvitationLinkGenerator;
 use App\Filament\Resources\ServerResource;
+use Facades\App\Helpers\Script;
 use App\Models\Server;
 use Filament\Actions;
 use Filament\Notifications\Notification;
