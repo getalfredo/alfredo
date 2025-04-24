@@ -17,6 +17,7 @@ x-laravel-app: &laravel-base
         - web
     extra_hosts:
         - 'host.docker.internal:host-gateway'
+        - 'local-vm:${LOCAL_SERVER_IP}'
     volumes:
         - .:/var/www/html
         - ./docker/ansible.cfg:/etc/ansible/ansible.cfg

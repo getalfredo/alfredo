@@ -16,6 +16,9 @@ class SpaceList extends Component
     #[Locked]
     public bool $isSpacesFolderAbsent = false;
 
+    #[Locked]
+    public bool $hasSpaceListRan = false;
+
     /**
      * Each string is a directory name of a space.
      *
@@ -36,6 +39,7 @@ class SpaceList extends Component
                     ->startsWith($this->server->spaces_folder_path)
                 )
                 ->toArray();
+            $this->hasSpaceListRan = true;
         }
     }
 

@@ -26,12 +26,23 @@
     @endif
 
     <div class="flex flex-col gap-6">
-        @foreach($this->spaces as $spacePath)
+        @forelse($this->spaces as $spacePath)
             <x-filament::section
                 :heading="str($spacePath)->afterLast('/')"
             >
 
             </x-filament::section>
-        @endforeach
+        @empty
+            @if($this->hasSpaceListRan)
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ __('No spaces found') }}
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {{ __('Please create a space.') }}
+                    </p>
+                </div>
+            @endif
+        @endforelse
     </div>
 </div>

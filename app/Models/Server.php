@@ -7,11 +7,14 @@ use App\Enums\KeyPairType;
 use App\Enums\ServerStatus;
 use App\Services\KeyPair;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
 
 class Server extends Model
 {
+    use HasFactory;
+
     public $hidden = [
         'private_key',
         'public_key',

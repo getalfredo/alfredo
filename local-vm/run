@@ -20,7 +20,11 @@ function vm:info {
 }
 
 function vm:create {
-    multipass launch -n alfredo-test-server --cloud-init ./cloud-init-config.yml
+    multipass launch -n alfredo-test-server \
+        --cloud-init ./cloud-init-config.yml \
+        --cpus 2 \
+        --memory 4G \
+        --disk 20G
 }
 
 function vm:destroy {
