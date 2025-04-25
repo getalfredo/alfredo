@@ -1,0 +1,28 @@
+#cloud-config
+
+users:
+  - name: {{ USERNAME }}
+    groups: sudo, docker
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) ALL']
+    passwd: {{ USER_PASSWORD_HASH }}
+    lock_passwd: false
+    ssh_authorized_keys:
+      {% for key in AUTHORIZED_SSH_KEYS %}
+      - {{ key }}
+      {% endfor %}
+
+groups:
+  - docker
+
+packages:
+  - docker.io
+  - docker-compose
+
+runcmd:
+  - systemctl start docker
+  - systemctl enable docker
+  - echo "Your droplet is ready!" >> /root/hello.txt
+
+# TODO: Ensure ssh passwd login is disabled OR in Ansible
+# TODO: Root ssh login is disabled OR in Ansible

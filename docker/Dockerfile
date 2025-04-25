@@ -3,10 +3,13 @@ FROM serversideup/php:8.4-fpm-nginx-bookworm AS base
 # Switch to root so we can do root things
 USER root
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Platform requirements
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y openssh-client git git-lfs jq software-properties-common
+RUN apt-get update
+RUN apt-get install -y openssh-client git git-lfs jq software-properties-common python3-dateutil
 RUN apt-add-repository ppa:ansible/ansible ; apt-get install -y ansible
+RUN ansible-galaxy collection install hetzner.hcloud
 
 # Cleanup
 RUN apt-get -y autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*

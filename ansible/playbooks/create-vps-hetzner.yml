@@ -1,0 +1,47 @@
+- name: Create a new Server
+  hosts: localhost
+  vars_files:
+    - vars/hetzner.secrets.yml
+
+  tasks:
+
+    - name: Generate SHA-512 password hash
+      ansible.builtin.set_fact:
+        USER_PASSWORD_HASH: "{{ USER_PASSWORD | password_hash('sha512') }}"
+      no_log: true
+
+    # https://docs.ansible.com/ansible/latest/collections/hetzner/hcloud/server_module.html#ansible-collections-hetzner-hcloud-server-module
+    - name: Create a new Server
+      hetzner.hcloud.server:
+        state: present
+        api_token: "{{ HETZNER_API_TOKEN }}"
+        backups: "{{ BACKUPS }}"
+        image: "{{ IMAGE }}"
+        name: "{{ NAME }}"
+        datacenter: "{{ DATACENTER }}"
+        server_type: "{{ SERVER_TYPE }}"
+        ssh_keys: "{{ HETZNER_SSH_KEYS }}"
+        user_data: "{{ lookup('template', 'templates/cloud-config.yml.j2') }}"
+      register: created_vps
+
+    - name: Debug created_vps
+      debug:
+        var: created_vps
+
+    - name: Custom output for created server
+      debug:
+        msg: |
+          Server created:
+            ID: {{ created_vps.hcloud_server.id }}
+            Name: {{ created_vps.hcloud_server.name }}
+            IP: {{ created_vps.hcloud_server.ipv4_address }}
+            Status: {{ created_vps.hcloud_server.status }}
+
+    - name: Assert that the server was created successfully
+      assert:
+        that:
+          - created_vps.failed is false
+          - created_vps.hcloud_server is defined
+        fail_msg: "Server creation failed"
+        success_msg: "Server created successfully"
+
