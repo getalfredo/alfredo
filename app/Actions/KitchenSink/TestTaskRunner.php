@@ -1,36 +1,15 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Actions\KitchenSink;
 
 use App\Jobs\ProcessServerTaskJob;
 use App\Models\Server;
 use App\Models\Task;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Process;
 
-class TestTaskRunner extends Command
+class TestTaskRunner
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:test-task-runner';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Test the task runner';
-
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): Task
     {
-        $this->info('Testing task runner...');
-
         $script = <<<'BASH'
 DURATION=${1:-8}
 INTERVAL=${2:-1}
@@ -64,5 +43,7 @@ BASH;
         ]);
 
         ProcessServerTaskJob::dispatch($server, $task);
+
+        return $task;
     }
 }

@@ -31,12 +31,16 @@ class ProcessServerTaskJob implements ShouldQueue
      */
     public function handle(ExecuteServerTask $executeServerTask): void
     {
+        if($this->task->status === TaskStatus::Cancelled) {
+            $this->fail();
+        }
+
         $this->task->update([
             'status' => TaskStatus::Running,
             'started_at' => now(),
         ]);
 
-        $taskStatus = $executeServerTask->handle(
+        $taskStatus = $executeServerTask->ha<ndle(
             server: $this->server,
             task: $this->task,
         );
