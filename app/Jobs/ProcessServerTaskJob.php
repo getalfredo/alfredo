@@ -40,7 +40,7 @@ class ProcessServerTaskJob implements ShouldQueue
             'started_at' => now(),
         ]);
 
-        $taskStatus = $executeServerTask->ha<ndle(
+        $taskStatus = $executeServerTask->handle(
             server: $this->server,
             task: $this->task,
         );

@@ -8,5 +8,8 @@
          >
              Run a dummy task
          </x-filament::button>
+
+         <livewire:task-monitor />
+
      </x-filament::section>
 </div>

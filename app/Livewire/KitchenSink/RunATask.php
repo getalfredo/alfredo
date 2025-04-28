@@ -8,11 +8,11 @@ use Livewire\Component;
 
 class RunATask extends Component
 {
-    public Task $task;
-
     public function runDummyTask(TestTaskRunner $testTaskRunner)
     {
-        
+        $task = $testTaskRunner->handle();
+
+        $this->dispatch('newTaskMonitor', $task->id);
     }
 
     public function render()
