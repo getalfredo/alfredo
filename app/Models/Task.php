@@ -17,7 +17,8 @@ class Task extends Model
         'environment_variables' => 'json',
         'metadata' => 'json',
         'output' => 'json',
-        'error_output' => 'json',
+        'std_out' => 'json',
+        'std_err' => 'json',
     ];
 
 }

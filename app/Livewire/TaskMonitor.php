@@ -15,7 +15,7 @@ class TaskMonitor extends Component
     #[Locked]
     public $taskId;
 
-    protected Task $task;
+    protected ?Task $task = null;
 
     public $isPollingActive = false;
 

@@ -17,8 +17,19 @@
     @else
         Idle
     @endif
-{{--    <x-server-task-ouput--}}
-{{--        :descriptionJson="$this->task?->description"--}}
-{{--        :$isPollingActive--}}
-{{--        :$pollingMs />--}}
+
+    <div
+        @if ($isPollingActive) wire:poll.{{ $pollingMs }}ms="polling" @endif
+    >
+        <div
+            class="scrollbar flex flex-col-reverse w-full overflow-y-auto border border-solid rounded border-gray-300 max-h-[32rem] p-4 text-xs"
+        >
+        <pre
+            class="font-mono whitespace-pre-wrap"
+            @if ($isPollingActive) wire:poll.{{ $pollingMs }}ms="polling" @endif
+        >{{ \App\Actions\ExecuteServerTask::decodeOutput($this->task?->output) }}</pre>
+        </div>
+    </div>
+
+
 </div>

@@ -29,8 +29,9 @@ return new class extends Migration
             $table->integer('timeout')->nullable(); // in seconds
 
             // Output
-            $table->longText('output')->nullable(); // stdout
-            $table->longText('error_output')->nullable(); // stderr
+            $table->longText('output')->default('[]'); // combined
+            $table->longText('std_out')->default('[]'); // stderr
+            $table->longText('std_err')->default('[]'); // stderr
 
             // Process information
             $table->integer('pid')->nullable();

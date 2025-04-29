@@ -9,6 +9,8 @@
              Run a dummy task
          </x-filament::button>
 
+         <hr class="my-6"/>
+
          <livewire:task-monitor />
 
      </x-filament::section>
