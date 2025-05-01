@@ -1,7 +1,7 @@
 - name: Create a new Server
   hosts: localhost
-  vars_files:
-    - vars/hetzner.secrets.yml
+#  vars_files:
+#    - vars/hetzner.secrets.yml
 
   tasks:
 

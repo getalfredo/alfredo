@@ -1,34 +1,14 @@
 ---
-title: Local VM
+title: Local testing VM
 description: Set up Local VM
 sidebar:
     order: 4
 ---
 
-We're using [Multipass (Canonical)](https://canonical.com/multipass) to have local VM's for development. 
+After trying out a local virtualization tool (Multipass), we decided to use a real cloud vps for the tests.
 
-This is a lightweight VM that runs on your local machine and is easy to set up and use.
+They charge by the hour, and it will be feasible to run the tests on a real cloud vps.
 
-Make sure you have it installed and running. You can find the installation instructions on the [Multipass install website](https://canonical.com/multipass/install).
+We might come back to this topic in the future, maybe with VirtualBox or Proxmox, but for now, a cloud VPS will deo.
 
-You may use any other VM solution, but we recommend using Multipass for its simplicity and ease of use.
-
-## Setting up locally
-
-In the `local-vm` folder, there are some scripts to help you set up the VM.
-
-Run
-
-```
-cd local-vm
-
-# Display available commands
-./run
-
-./run vm:create
-./run vm:ssh
-# You should be in!
-
-./run vm:info
-```
 

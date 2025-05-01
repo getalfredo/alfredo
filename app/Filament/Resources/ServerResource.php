@@ -125,6 +125,8 @@ class ServerResource extends Resource
         return [
             'index' => Pages\ListServers::route('/'),
             'create' => Pages\CreateServer::route('/create'),
+            'deploy-hetzner-vps' => Pages\DeployHetznerVPS::route('/deploy-hetzner-vps'),
+
             'view' => Pages\ViewServer::route('/{record}'),
             'edit' => Pages\EditServer::route('/{record}/edit'),
             'spaces' => Pages\ManageSpaces::route('/{record}/spaces'),

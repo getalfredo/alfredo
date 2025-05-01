@@ -47,6 +47,8 @@
         }
     },
     "scripts": {
+        "now": "@test-ansible",
+        "test-ansible": "docker compose exec webapp bash -c \"php artisan test --filter=Hetzner \"",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",

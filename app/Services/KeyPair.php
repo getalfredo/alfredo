@@ -4,9 +4,10 @@ namespace App\Services;
 
 use App\Enums\KeyPairType;
 use App\Models\Server;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\File;
 
-class KeyPair
+class KeyPair implements Arrayable
 {
     public function __construct(
         public readonly string $privateKey,
@@ -29,5 +30,18 @@ class KeyPair
         File::put($tmp_dir('public_key'), $this->publicKey);
         File::put($tmp_dir('private_key'), $this->privateKey);
         File::chmod($tmp_dir('private_key'), 0600);
+    }
+
+    public function __toString(): string
+    {
+        return $this->toArray();
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'privateKey' => $this->privateKey,
+            'publicKey' => $this->publicKey,
+        ];
     }
 }

@@ -14,6 +14,9 @@ class ListServers extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('deploy_hetzner_vps')
+                ->label('Deploy Hetzner VPS')
+                ->url(ServerResource::getUrl('deploy-hetzner-vps')),
         ];
     }
 }
