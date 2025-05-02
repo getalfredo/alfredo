@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\ExecuteHetznerDeployment;
 use App\Data\DeployHetznerVPSArgsData;
+use App\Models\Credential;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -28,6 +29,14 @@ class DeployHetznerVPSForm extends Component implements HasForms
     {
         return $form
             ->schema([
+                Select::make('credential_id')
+                    ->label('Credentials')
+                    ->options(function () {
+                        return Credential::query()
+                            ->where('user_id', auth()->id())
+                            ->pluck('name', 'uuid');
+                    })
+                    ->required(),
                 TextInput::make('name')
                     ->required(),
                 Select::make('server_type')
@@ -57,6 +66,9 @@ class DeployHetznerVPSForm extends Component implements HasForms
                 Repeater::make('authorized_ssh_keys')
                     ->required()
                     ->minItems(1)
+                    // TODO: Maybe someday, allow to start a server by providing multiple keys right ahead
+                    //       We can add more after the creation, for now, so it's not blocking.
+                    ->maxItems(1)
                     ->collapsible()
                     ->schema([
                         TextInput::make('private_key')
@@ -65,20 +77,16 @@ class DeployHetznerVPSForm extends Component implements HasForms
                             ->label('Public Key'),
                     ]),
                 Repeater::make('hetzner_ssh_keys')
-                    ->addActionLabel('Hetzner SSH Keys')
+                    ->addActionLabel('Add a Hetzner SSH Key')
                     ->helperText('Matches the Key name in Hetzner Dashboard.')
                     ->simple(TextInput::make('private_key'))
-                    ->label('SSH Key Name'),
+                    ->label('Hetzner SSH Key Name'),
             ])
             ->statePath('data');
     }
 
     public function create(ExecuteHetznerDeployment $executeHetznerDeployment): void
     {
-        ray(
-            $this->form->getState()
-        );
-
         $result = $executeHetznerDeployment->handle(
             DeployHetznerVPSArgsData::from($this->form->getState())
         );

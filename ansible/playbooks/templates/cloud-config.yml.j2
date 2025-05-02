@@ -8,9 +8,9 @@ users:
     passwd: {{ USER_PASSWORD_HASH }}
     lock_passwd: false
     ssh_authorized_keys:
-      {% for key in AUTHORIZED_SSH_KEYS %}
+{% for key in AUTHORIZED_SSH_KEYS %}
       - {{ key }}
-      {% endfor %}
+{% endfor %}
 
 groups:
   - docker

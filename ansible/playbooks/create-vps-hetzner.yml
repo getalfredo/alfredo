@@ -1,10 +1,7 @@
 - name: Create a new Server
   hosts: localhost
-#  vars_files:
-#    - vars/hetzner.secrets.yml
 
   tasks:
-
     - name: Generate SHA-512 password hash
       ansible.builtin.set_fact:
         USER_PASSWORD_HASH: "{{ USER_PASSWORD | password_hash('sha512') }}"
@@ -24,18 +21,14 @@
         user_data: "{{ lookup('template', 'templates/cloud-config.yml.j2') }}"
       register: created_vps
 
-    - name: Debug created_vps
+    - name: Debug template output
       debug:
-        var: created_vps
+        msg: "{{ lookup('template', 'templates/cloud-config.yml.j2') }}"
 
     - name: Custom output for created server
       debug:
         msg: |
-          Server created:
-            ID: {{ created_vps.hcloud_server.id }}
-            Name: {{ created_vps.hcloud_server.name }}
-            IP: {{ created_vps.hcloud_server.ipv4_address }}
-            Status: {{ created_vps.hcloud_server.status }}
+          <server-response>{{ created_vps | to_json }}</server-response>
 
     - name: Assert that the server was created successfully
       assert:
@@ -44,4 +37,3 @@
           - created_vps.hcloud_server is defined
         fail_msg: "Server creation failed"
         success_msg: "Server created successfully"
-

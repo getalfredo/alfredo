@@ -13,6 +13,8 @@ use Spatie\Activitylog\Models\Activity;
 
 class Server extends Model
 {
+    public const int SSH_DEFAULT_PORT = 22;
+
     use HasFactory;
 
     public $hidden = [

@@ -15,7 +15,7 @@ class CheckSSHConnection extends Command
      *
      * @var string
      */
-    protected $signature = 'app:test-ssh';
+    protected $signature = 'app:test-ssh {serverId}';
 
     /**
      * The console command description.
@@ -34,7 +34,9 @@ class CheckSSHConnection extends Command
 
     public function ping()
     {
-        $server = Server::find(1);
+        $server = Server::find(
+            $this->argument('serverId')
+        );
 
         $sshHelper = resolve(SSHHelper::class);
 
