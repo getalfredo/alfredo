@@ -19,17 +19,22 @@ class ExecuteHetznerDeployment
             ->where('uuid', $args->credential_id)
             ->sole();
 
+        $publicSSHKeys = collect($args->authorized_ssh_keys)
+            ->map(fn(KeyPair $keyPair) => $keyPair->publicKey);
+
+        $privateSSHKeys = collect($args->authorized_ssh_keys)
+            ->map(fn(KeyPair $keyPair) => $keyPair->privateKey);
+
+
         $argsArray = [
             ...$args->toArray(),
-            'AUTHORIZED_SSH_KEYS' => collect($args->authorized_ssh_keys)
-                ->map(fn(KeyPair $keyPair) => $keyPair->publicKey)
-                ->toArray(),
+            'AUTHORIZED_SSH_KEYS' => $publicSSHKeys->toArray(),
             'HETZNER_API_TOKEN' => $credential->value,
         ];
 
         unset($argsArray['CREDENTIAL_ID']);
 
-        $isHittingHetzerApiEnabled = true;
+        $isHittingHetzerApiEnabled = false;
 
         if ($isHittingHetzerApiEnabled) {
 
@@ -41,7 +46,7 @@ class ExecuteHetznerDeployment
                         json_encode($argsArray),
                         'playbooks/create-vps-hetzner.yml',
                     ], output: function ($type, $output) {
-                        echo $output;
+                        // echo $output;
                     })
                     ->throw();
             $processOutput = $result->output();
@@ -76,14 +81,12 @@ class ExecuteHetznerDeployment
             'name' => $name,
             'public_ipv4' => $ipv4_address,
             'status' => ServerStatus::Running,
-            'private_key' => data_get($args->authorized_ssh_keys, '0.private_key'),
-            'public_key' => data_get($args->authorized_ssh_keys, '0.public_key'),
+            'private_key' => $privateSSHKeys->first(),
+            'public_key' => $publicSSHKeys->first(),
             'username' => $args->username,
             'sudo_password' => $args->user_password,
             'ssh_port' => Server::SSH_DEFAULT_PORT,
         ]);
-
-        ray($server);
 
         return true;
     }

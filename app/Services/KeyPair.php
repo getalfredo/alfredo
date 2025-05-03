@@ -32,11 +32,6 @@ class KeyPair implements Arrayable
         File::chmod($tmp_dir('private_key'), 0600);
     }
 
-    public function __toString(): string
-    {
-        return $this->toArray();
-    }
-
     public function toArray(): array
     {
         return [
