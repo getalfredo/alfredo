@@ -13,7 +13,8 @@ class ListServers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Add existing server'),
             Actions\Action::make('deploy_hetzner_vps')
                 ->label('Deploy Hetzner VPS')
                 ->url(ServerResource::getUrl('deploy-hetzner-vps')),

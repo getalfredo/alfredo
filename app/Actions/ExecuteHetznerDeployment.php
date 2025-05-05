@@ -34,7 +34,7 @@ class ExecuteHetznerDeployment
 
         unset($argsArray['CREDENTIAL_ID']);
 
-        $isHittingHetzerApiEnabled = false;
+        $isHittingHetzerApiEnabled = true;
 
         if ($isHittingHetzerApiEnabled) {
 

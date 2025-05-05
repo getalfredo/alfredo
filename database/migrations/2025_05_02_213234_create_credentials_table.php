@@ -14,9 +14,14 @@ return new class extends Migration
         Schema::create('credentials', function (Blueprint $table) {
             $table->id();
             $table->uuid()->unique();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->text('value');
+            $table->foreignId('user_id')->nullable()->constrained();
+            $table->string('type');
+            $table->string('name')->nullable();
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
+            $table->text('public_key')->nullable();
+            $table->text('private_key')->nullable();
+            $table->text('value')->nullable();
             $table->timestamps();
         });
     }

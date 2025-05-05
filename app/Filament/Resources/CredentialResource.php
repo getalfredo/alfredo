@@ -2,33 +2,38 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CredentialType;
+use App\Filament\Resources\CredentialResource\Forms\ApiTokenSection;
+use App\Filament\Resources\CredentialResource\Forms\SSHKeySection;
 use App\Filament\Resources\CredentialResource\Pages;
 use App\Filament\Resources\CredentialResource\RelationManagers;
 use App\Models\Credential;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CredentialResource extends Resource
 {
     protected static ?string $model = Credential::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-key';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('value')
-                    ->required()
-                    ->columnSpanFull(),
+                Forms\Components\Radio::make(Credential::$typeAttr)
+                    ->label('Credential Type')
+                    ->live()
+                    ->options(CredentialType::class),
+                ApiTokenSection::get(),
+                SSHKeySection::get(),
             ]);
     }
 

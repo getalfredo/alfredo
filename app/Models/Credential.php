@@ -2,25 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class Credential extends Model
 {
-    /** @use HasFactory<\Database\Factories\CredentialFactory> */
-    use HasFactory;
-
-    protected $fillable = [
-        'uuid',
-        'user_id',
-        'name',
-        'value',
-    ];
+    public static string $typeAttr = 'type';
 
     protected $casts = [
         'value' => 'encrypted',
+        'username' => 'encrypted',
+        'password' => 'encrypted',
+        'private_key' => 'encrypted',
+        'public_key' => 'encrypted',
     ];
 
     protected static function boot()

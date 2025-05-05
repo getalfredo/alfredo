@@ -18,17 +18,11 @@ class Server extends Model
     use HasFactory;
 
     public $hidden = [
-        'private_key',
-        'public_key',
         'sudo_password',
     ];
 
-    protected $guarded = ['id'];
-
     public $casts = [
         'status' => ServerStatus::class,
-        'private_key' => 'encrypted',
-        'public_key' => 'encrypted',
         'sudo_password' => 'encrypted',
     ];
 

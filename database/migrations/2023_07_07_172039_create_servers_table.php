@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('public_ipv4', 20);
-            $table->string('status')->nullable()->default(\App\Enums\ServerStatus::New->value);
-            $table->text('private_key')->nullable();
-            $table->text('public_key')->nullable();
-            $table->string('username')->nullable();
-            $table->string('sudo_password')->nullable();
+            $table->string('status')
+                ->nullable()
+                ->default(\App\Enums\ServerStatus::New->value);
             $table->integer('ssh_port')->nullable();
             $table->timestamps();
         });
