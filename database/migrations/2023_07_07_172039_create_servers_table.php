@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('public_ipv4', 20);
+            $table->string('username');
+            $table->string('sudo_password');
+            $table->string('spaces_directory');
             $table->string('status')
                 ->nullable()
                 ->default(\App\Enums\ServerStatus::New->value);

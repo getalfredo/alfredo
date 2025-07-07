@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use App\Enums\KeyPairType;
-use App\Models\Credential;
+use App\Models\APIToken;
 use App\Services\KeyPair;
 use Illuminate\Support\Facades\File;
 
@@ -36,14 +36,14 @@ class TestCreateHetznerVPS extends Command
 
         auth()->login($user);
 
-        $credential = Credential::firstOrCreate([
+        $credential = APIToken::firstOrCreate([
             'name' => 'Local Hetzner Test Credential',
         ], [
             'user_id' => $user->id,
             'value' => env('LOCAL_HETZNER_API_TOKEN'),
         ]);
 
-        $action = resolve(\App\Actions\ExecuteHetznerDeployment::class);
+        $action = resolve(\App\Actions\ExecuteDeployHetznerVPS::class);
 
         $args = \App\Data\DeployHetznerVPSArgsData::from([
             'name' => 'test',

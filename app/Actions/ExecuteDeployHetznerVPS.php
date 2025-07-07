@@ -4,12 +4,12 @@ namespace App\Actions;
 
 use App\Data\DeployHetznerVPSArgsData;
 use App\Enums\ServerStatus;
+use App\Models\APIToken;
 use App\Models\Server;
-use App\Services\KeyPair;
 use Illuminate\Support\Facades\Process;
 use phpDocumentor\Reflection\Exception;
 
-class ExecuteHetznerDeployment
+class ExecuteDeployHetznerVPS
 {
     public function handle(DeployHetznerVPSArgsData $args): bool
     {
@@ -19,16 +19,18 @@ class ExecuteHetznerDeployment
             ->where('uuid', $args->credential_id)
             ->sole();
 
-        $publicSSHKeys = collect($args->authorized_ssh_keys)
-            ->map(fn(KeyPair $keyPair) => $keyPair->publicKey);
+        $keyPair = resolve(SSHKeys\CreateSSHKey::class)->handle();
 
-        $privateSSHKeys = collect($args->authorized_ssh_keys)
-            ->map(fn(KeyPair $keyPair) => $keyPair->privateKey);
-
+        $sshKey = APIToken::create([
+            'type' => \App\Enums\CredentialType::SSH_KEY,
+            'name' => 'First SSH Key',
+            'public_key' => $keyPair->publicKey,
+            'private_key' => $keyPair->privateKey,
+        ]);
 
         $argsArray = [
             ...$args->toArray(),
-            'AUTHORIZED_SSH_KEYS' => $publicSSHKeys->toArray(),
+            'AUTHORIZED_SSH_KEYS' => [ $sshKey->public_key ],
             'HETZNER_API_TOKEN' => $credential->value,
         ];
 
@@ -81,12 +83,13 @@ class ExecuteHetznerDeployment
             'name' => $name,
             'public_ipv4' => $ipv4_address,
             'status' => ServerStatus::Running,
-            'private_key' => $privateSSHKeys->first(),
-            'public_key' => $publicSSHKeys->first(),
             'username' => $args->username,
-            'sudo_password' => $args->user_password,
+            'sudo_password' => $args->sudo_password,
             'ssh_port' => Server::SSH_DEFAULT_PORT,
         ]);
+
+        collect($args->authorized_ssh_keys)
+            ->map(fn(APIToken $credential) => $credential->update(['server_id' => $server->id]));
 
         return true;
     }

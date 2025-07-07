@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\SSHKeys;
 
 use App\Enums\KeyPairType;
 use App\Services\KeyPair;

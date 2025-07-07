@@ -4,7 +4,7 @@
   tasks:
     - name: Generate SHA-512 password hash
       ansible.builtin.set_fact:
-        USER_PASSWORD_HASH: "{{ USER_PASSWORD | password_hash('sha512') }}"
+        SUDO_PASSWORD_HASH: "{{ SUDO_PASSWORD | password_hash('sha512') }}"
       no_log: true
 
     # https://docs.ansible.com/ansible/latest/collections/hetzner/hcloud/server_module.html#ansible-collections-hetzner-hcloud-server-module

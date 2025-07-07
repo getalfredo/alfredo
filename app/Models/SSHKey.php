@@ -6,14 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
-class Credential extends Model
+class SSHKey extends Model
 {
-    public static string $typeAttr = 'type';
+    protected $table = 'ssh_keys';
 
     protected $casts = [
-        'value' => 'encrypted',
-        'username' => 'encrypted',
-        'password' => 'encrypted',
         'private_key' => 'encrypted',
         'public_key' => 'encrypted',
     ];
@@ -27,8 +24,8 @@ class Credential extends Model
         });
     }
 
-    public function user(): BelongsTo
+    public function server(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Server::class);
     }
 }

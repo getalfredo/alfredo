@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Actions\ExecuteHetznerDeployment;
+use App\Actions\ExecuteDeployHetznerVPS;
 use App\Data\DeployHetznerVPSArgsData;
-use App\Models\Credential;
+use App\Models\APIToken;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -32,7 +32,7 @@ class DeployHetznerVPSForm extends Component implements HasForms
                 Select::make('credential_id')
                     ->label('Credentials')
                     ->options(function () {
-                        return Credential::query()
+                        return APIToken::query()
                             ->where('user_id', auth()->id())
                             ->pluck('name', 'uuid');
                     })
@@ -63,19 +63,6 @@ class DeployHetznerVPSForm extends Component implements HasForms
                     ->required(),
                 TextInput::make('user_password')
                     ->required(),
-                Repeater::make('authorized_ssh_keys')
-                    ->required()
-                    ->minItems(1)
-                    // TODO: Maybe someday, allow to start a server by providing multiple keys right ahead
-                    //       We can add more after the creation, for now, so it's not blocking.
-                    ->maxItems(1)
-                    ->collapsible()
-                    ->schema([
-                        TextInput::make('private_key')
-                            ->label('Private Key'),
-                        TextInput::make('public_key')
-                            ->label('Public Key'),
-                    ]),
                 Repeater::make('hetzner_ssh_keys')
                     ->addActionLabel('Add a Hetzner SSH Key')
                     ->helperText('Matches the Key name in Hetzner Dashboard.')
@@ -85,8 +72,12 @@ class DeployHetznerVPSForm extends Component implements HasForms
             ->statePath('data');
     }
 
-    public function create(ExecuteHetznerDeployment $executeHetznerDeployment): void
+    public function create(ExecuteDeployHetznerVPS $executeHetznerDeployment): void
     {
+        $payload = [
+            ...$this->form->getState(),
+            ''];
+
         $result = $executeHetznerDeployment->handle(
             DeployHetznerVPSArgsData::from($this->form->getState())
         );

@@ -5,7 +5,7 @@ users:
     groups: sudo, docker
     shell: /bin/bash
     sudo: ['ALL=(ALL) ALL']
-    passwd: {{ USER_PASSWORD_HASH }}
+    passwd: {{ SUDO_PASSWORD_HASH }}
     lock_passwd: false
     ssh_authorized_keys:
 {% for key in AUTHORIZED_SSH_KEYS %}

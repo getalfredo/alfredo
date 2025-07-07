@@ -1,9 +1,6 @@
 <?php
 
-use App\Enums\KeyPairType;
-use App\Models\Credential;
-use App\Services\KeyPair;
-use Illuminate\Support\Facades\File;
+use App\Models\APIToken;
 
 test('we can run the Deploy Hetzner VPS within an Ansible task', function () {
 
@@ -15,13 +12,14 @@ test('we can run the Deploy Hetzner VPS within an Ansible task', function () {
 
     $this->actingAs($user);
 
-    $credential = Credential::create([
-        'name' => 'Local Hetzner Test Credential',
+    $credential = APIToken::create([
+        'type' => \App\Enums\CredentialType::API_TOKEN,
         'user_id' => $user->id,
+        'name' => 'Local Hetzner Test Credential',
         'value' => env('LOCAL_HETZNER_API_TOKEN'),
     ]);
 
-    $action = resolve(\App\Actions\ExecuteHetznerDeployment::class);
+    $action = resolve(\App\Actions\ExecuteDeployHetznerVPS::class);
 
     $args = \App\Data\DeployHetznerVPSArgsData::from([
         'name' => 'test',
@@ -31,18 +29,13 @@ test('we can run the Deploy Hetzner VPS within an Ansible task', function () {
         'monitoring' => true,
         'backups' => false,
         'username' => 'alfredo',
-        'user_password' => 'password',
-        'authorized_ssh_keys' => [
-            new KeyPair(
-                privateKey: File::get(base_path('local-vm/id_alfredo_dev')),
-                publicKey: File::get(base_path('local-vm/id_alfredo_dev.pub')),
-                type: KeyPairType::Ed25519
-            )
-        ],
+        'sudo_password' => 'password',
         'hetzner_ssh_keys' => [],
+        'authorized_ssh_keys' => [ $sshKey ],
         'credential_id' => $credential->uuid,
     ]);
 
     $result = $action->handle($args);
 
+    dd($result);
 });
