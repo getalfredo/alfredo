@@ -7,7 +7,8 @@
       "mcp__laravel-boost__list-routes",
       "Bash(vendor/bin/pint:*)",
       "Bash(vendor/bin/pest:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(cat:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
