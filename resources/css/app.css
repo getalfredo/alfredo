@@ -359,11 +359,11 @@
     --sidebar-ring: oklch(0.55 0.15 35);
 }
 
-/* Theme preview swatches - allows data-theme on any element */
-[data-theme='default'] { --color-primary: oklch(0.205 0 0); }
-[data-theme='ocean'] { --color-primary: oklch(0.55 0.15 240); }
-[data-theme='forest'] { --color-primary: oklch(0.45 0.15 145); }
-[data-theme='sunset'] { --color-primary: oklch(0.6 0.2 35); }
+/* Theme preview swatches - scoped to exclude html element where full theme is applied */
+:not(html)[data-theme='default'] { --color-primary: oklch(0.205 0 0); }
+:not(html)[data-theme='ocean'] { --color-primary: oklch(0.55 0.15 240); }
+:not(html)[data-theme='forest'] { --color-primary: oklch(0.45 0.15 145); }
+:not(html)[data-theme='sunset'] { --color-primary: oklch(0.6 0.2 35); }
 
 @layer base {
     * {
