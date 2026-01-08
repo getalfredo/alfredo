@@ -14,7 +14,7 @@ return [
 
     'scan_directories' => array_filter(
         explode(',', (string) env('ALFREDO_SCAN_DIRECTORIES', '')),
-        fn ($path) => ! empty(trim($path))
+        fn ($path) => filled($path)
     ),
 
     /*
