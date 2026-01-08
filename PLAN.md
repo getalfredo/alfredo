@@ -1,9 +1,13 @@
-# Docker Compose Project Manager - Implementation Plan (Revised)
+# Docker Compose Project Manager - Implementation Plan
+
+## Status: COMPLETE
+
+All features have been implemented and tested (27 tests passing).
 
 ## Overview
-Build a Docker Compose project management feature to list projects, edit files in the UI, and execute commands with real-time output streaming.
+Docker Compose project management feature to list projects, edit files in the UI, and execute commands with real-time output streaming.
 
-**Key Change: Filesystem-based project discovery (no database tables)**
+**Architecture: Filesystem-based project discovery (no database tables)**
 
 ## Requirements Summary
 - **Discovery**: Scan configured directories for `alfredo.yml` files + manual project paths stored in JSON file
@@ -293,3 +297,30 @@ editable_files:  # Optional: glob patterns (defaults if not specified)
 **Modify:**
 - `routes/web.php` - require projects.php
 - `resources/js/components/app-sidebar.tsx` - add Projects nav item
+
+---
+
+## Getting Started
+
+### Configuration
+
+Add scan directories to your `.env` file:
+
+```env
+ALFREDO_SCAN_DIRECTORIES=/path/to/projects,/another/path
+ALFREDO_COMMAND_TIMEOUT=300
+ALFREDO_MAX_LOG_LINES=1000
+```
+
+### Usage
+
+1. **Auto-discovery**: Projects with `alfredo.yml` files in configured directories are automatically discovered
+2. **Manual addition**: Click "Add Project" to add any directory containing a `docker-compose.yml`
+3. **Project dashboard**: View services, run commands (up, down, restart, etc.), see real-time output
+4. **File editing**: Edit docker-compose.yml, .env, and Dockerfile with Monaco Editor
+
+### Running Tests
+
+```bash
+php artisan test tests/Feature/Projects/
+```
