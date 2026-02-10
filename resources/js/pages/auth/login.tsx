@@ -15,12 +15,14 @@ interface LoginProps {
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    isLocal: boolean;
 }
 
 export default function Login({
     status,
     canResetPassword,
     canRegister,
+    isLocal,
 }: LoginProps) {
     return (
         <AuthLayout
@@ -47,6 +49,7 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
+                                    defaultValue={isLocal ? 'test@example.com' : ''}
                                     placeholder="email@example.com"
                                 />
                                 <InputError message={errors.email} />
@@ -72,6 +75,7 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
+                                    defaultValue={isLocal ? 'password' : ''}
                                     placeholder="Password"
                                 />
                                 <InputError message={errors.password} />
