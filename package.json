@@ -8,7 +8,8 @@
     "start": "NODE_ENV=production bun src/index.tsx",
     "build": "bun run scripts/build.ts",
     "compile": "bun run scripts/compile.ts",
-    "compile:linux": "bun run scripts/compile.ts --target=linux-x64"
+    "compile:linux": "bun run scripts/compile.ts --target=linux-x64",
+    "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
