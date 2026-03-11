@@ -3,6 +3,7 @@ import { serve } from "bun";
 import { runCLI } from "./cli";
 import { apiRoutes } from "./routes";
 import { handleUpgrade, websocketHandler } from "./lib/websocket";
+import { startComposeJobWorker } from "./lib/jobs";
 import index from "./index.html";
 
 const command = process.argv[2];
@@ -11,6 +12,8 @@ if (command && command !== "serve") {
   await runCLI(command);
   process.exit(0);
 }
+
+await startComposeJobWorker();
 
 const server = serve({
   routes: {

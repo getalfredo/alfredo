@@ -201,10 +201,7 @@ export async function getContainerStatus(project: ProjectConfig): Promise<Contai
 }
 
 async function runCompose(project: ProjectConfig, args: string[]): Promise<{ ok: boolean; output: string }> {
-  const proc = Bun.spawn(
-    ["docker", "compose", "-f", project.composeFile, ...args],
-    { cwd: project.path, stdout: "pipe", stderr: "pipe" }
-  );
+  const proc = spawnCompose(project, args);
 
   const [stdout, stderr] = await Promise.all([
     new Response(proc.stdout).text(),
@@ -215,6 +212,13 @@ async function runCompose(project: ProjectConfig, args: string[]): Promise<{ ok:
   const output = (stdout + "\n" + stderr).trim();
 
   return { ok: exitCode === 0, output };
+}
+
+export function spawnCompose(project: ProjectConfig, args: string[]): ReturnType<typeof Bun.spawn> {
+  return Bun.spawn(
+    ["docker", "compose", "-f", project.composeFile, ...args],
+    { cwd: project.path, stdout: "pipe", stderr: "pipe" }
+  );
 }
 
 export async function composeUp(project: ProjectConfig) {

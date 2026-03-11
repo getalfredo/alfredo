@@ -2,47 +2,99 @@ import type { ServerWebSocket } from "bun";
 import { findProject } from "./config";
 import { spawnLogs } from "./docker";
 import { auth } from "./auth";
+import { getComposeJob, subscribeComposeJob } from "./jobs";
 
-export interface WebSocketData {
+export interface LogsWebSocketData {
+  kind: "logs";
   projectName: string;
   userId: string;
   process?: ReturnType<typeof Bun.spawn>;
 }
 
+export interface JobWebSocketData {
+  kind: "job";
+  jobId: string;
+  userId: string;
+  unsubscribe?: () => void;
+}
+
+export type WebSocketData = LogsWebSocketData | JobWebSocketData;
+
 export async function handleUpgrade(req: Request, server: any): Promise<Response | undefined> {
   const url = new URL(req.url);
-
-  // Only handle /ws/logs/:name
-  const match = url.pathname.match(/^\/ws\/logs\/(.+)$/);
-  if (!match) return new Response("Not found", { status: 404 });
-
-  const projectName = decodeURIComponent(match[1]);
 
   // Authenticate via cookies
   const session = await auth.api.getSession({ headers: req.headers });
   if (!session) return new Response("Unauthorized", { status: 401 });
 
-  // Validate project
-  const project = findProject(projectName);
-  if (!project) return new Response("Project not found", { status: 404 });
+  // /ws/logs/:name
+  const logsMatch = url.pathname.match(/^\/ws\/logs\/(.+)$/);
+  if (logsMatch) {
+    const projectName = decodeURIComponent(logsMatch[1]);
 
-  const upgraded = server.upgrade(req, {
-    data: {
-      projectName,
-      userId: session.user.id,
-    } satisfies WebSocketData,
-  });
+    // Validate project
+    const project = findProject(projectName);
+    if (!project) return new Response("Project not found", { status: 404 });
 
-  if (!upgraded) {
-    return new Response("WebSocket upgrade failed", { status: 500 });
+    const upgraded = server.upgrade(req, {
+      data: {
+        kind: "logs",
+        projectName,
+        userId: session.user.id,
+      } satisfies LogsWebSocketData,
+    });
+
+    if (!upgraded) {
+      return new Response("WebSocket upgrade failed", { status: 500 });
+    }
+
+    return undefined;
   }
 
-  // Return undefined signals successful upgrade
-  return undefined;
+  // /ws/jobs/:id
+  const jobsMatch = url.pathname.match(/^\/ws\/jobs\/(.+)$/);
+  if (jobsMatch) {
+    const jobId = decodeURIComponent(jobsMatch[1]);
+    const job = await getComposeJob(jobId);
+    if (!job) return new Response("Job not found", { status: 404 });
+
+    const upgraded = server.upgrade(req, {
+      data: {
+        kind: "job",
+        jobId,
+        userId: session.user.id,
+      } satisfies JobWebSocketData,
+    });
+
+    if (!upgraded) {
+      return new Response("WebSocket upgrade failed", { status: 500 });
+    }
+
+    return undefined;
+  }
+
+  return new Response("Not found", { status: 404 });
 }
 
 export const websocketHandler = {
   async open(ws: ServerWebSocket<WebSocketData>) {
+    if (ws.data.kind === "job") {
+      const unsubscribe = await subscribeComposeJob(ws.data.jobId, (event) => {
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify(event));
+        }
+      });
+
+      if (!unsubscribe) {
+        ws.send(JSON.stringify({ type: "error", message: "Job not found" }));
+        ws.close();
+        return;
+      }
+
+      ws.data.unsubscribe = unsubscribe;
+      return;
+    }
+
     const project = findProject(ws.data.projectName);
     if (!project) {
       ws.send(JSON.stringify({ error: "Project not found" }));
@@ -99,6 +151,14 @@ export const websocketHandler = {
   },
 
   close(ws: ServerWebSocket<WebSocketData>) {
+    if (ws.data.kind === "job") {
+      if (ws.data.unsubscribe) {
+        ws.data.unsubscribe();
+        ws.data.unsubscribe = undefined;
+      }
+      return;
+    }
+
     if (ws.data.process) {
       ws.data.process.kill();
       ws.data.process = undefined;

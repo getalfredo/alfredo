@@ -4,12 +4,10 @@ import { resolve } from "node:path";
 import { ensureDefaultStacksDirectory, getProjects, findProject, refreshProjects } from "../lib/config";
 import {
   getContainerStatus,
-  composeUp,
-  composeDown,
-  composeRestart,
   readComposeFile,
   writeComposeFile,
 } from "../lib/docker";
+import { enqueueComposeJob, getComposeJob } from "../lib/jobs";
 
 const STACK_NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const DEFAULT_COMPOSE_CONTENT = `services:
@@ -118,8 +116,8 @@ export const dockerRoutes = {
       const project = findProject(req.params.name);
       if (!project) return Response.json({ error: "Project not found" }, { status: 404 });
 
-      const result = await composeUp(project);
-      return Response.json(result, { status: result.ok ? 200 : 500 });
+      const job = await enqueueComposeJob(project, "up");
+      return Response.json({ ok: true, job }, { status: 202 });
     },
   },
 
@@ -131,8 +129,8 @@ export const dockerRoutes = {
       const project = findProject(req.params.name);
       if (!project) return Response.json({ error: "Project not found" }, { status: 404 });
 
-      const result = await composeDown(project);
-      return Response.json(result, { status: result.ok ? 200 : 500 });
+      const job = await enqueueComposeJob(project, "down");
+      return Response.json({ ok: true, job }, { status: 202 });
     },
   },
 
@@ -144,8 +142,8 @@ export const dockerRoutes = {
       const project = findProject(req.params.name);
       if (!project) return Response.json({ error: "Project not found" }, { status: 404 });
 
-      const result = await composeRestart(project);
-      return Response.json(result, { status: result.ok ? 200 : 500 });
+      const job = await enqueueComposeJob(project, "restart");
+      return Response.json({ ok: true, job }, { status: 202 });
     },
   },
 
@@ -175,6 +173,18 @@ export const dockerRoutes = {
 
       await writeComposeFile(project, body.content);
       return Response.json({ ok: true });
+    },
+  },
+
+  "/api/jobs/:id": {
+    async GET(req: Request & { params: { id: string } }) {
+      const session = await withAuth(req);
+      if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+      const job = await getComposeJob(req.params.id);
+      if (!job) return Response.json({ error: "Job not found" }, { status: 404 });
+
+      return Response.json({ job });
     },
   },
 } as const;

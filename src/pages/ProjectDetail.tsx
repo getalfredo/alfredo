@@ -17,6 +17,28 @@ interface ProjectStatus {
   containers: ContainerInfo[];
 }
 
+type ComposeAction = "up" | "down" | "restart";
+type JobStatus = "queued" | "running" | "completed" | "failed";
+
+interface ComposeJob {
+  id: string;
+  projectName: string;
+  action: ComposeAction;
+  status: JobStatus;
+  output: string;
+  createdAt: string;
+  startedAt?: string;
+  finishedAt?: string;
+  exitCode?: number;
+}
+
+type ComposeJobSocketEvent =
+  | { type: "snapshot"; job: ComposeJob }
+  | { type: "status"; status: JobStatus }
+  | { type: "chunk"; chunk: string }
+  | { type: "done"; ok: boolean; exitCode: number; job: ComposeJob }
+  | { type: "error"; message: string };
+
 type Tab = "status" | "logs" | "compose";
 
 export function ProjectDetail({ name }: { name: string }) {
@@ -56,8 +78,9 @@ function StatusTab({ name }: { name: string }) {
   const [status, setStatus] = useState<ProjectStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: "success" | "error" | "info"; text: string } | null>(null);
   const [actionOutput, setActionOutput] = useState("");
+  const actionWsRef = useRef<WebSocket | null>(null);
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -68,10 +91,44 @@ function StatusTab({ name }: { name: string }) {
     }
   }, [name]);
 
-  function actionLabel(action: "up" | "down" | "restart"): string {
+  function actionLabel(action: ComposeAction): string {
     if (action === "up") return "start";
     if (action === "down") return "stop";
     return "restart";
+  }
+
+  function appendActionOutput(chunk: string) {
+    if (!chunk) return;
+    setActionOutput((prev) => {
+      const next = prev + chunk;
+      if (next.length > 500_000) return next.slice(-400_000);
+      return next;
+    });
+  }
+
+  function applyJobSnapshot(job: ComposeJob) {
+    setActionOutput(job.output || "");
+
+    if (job.status === "queued") {
+      setActionMessage({ type: "info", text: `${actionLabel(job.action)} queued...` });
+      return;
+    }
+
+    if (job.status === "running") {
+      setActionMessage({ type: "info", text: `${actionLabel(job.action)} in progress...` });
+      return;
+    }
+
+    if (job.status === "completed") {
+      setActionLoading(null);
+      setActionMessage({ type: "success", text: `${actionLabel(job.action)} completed.` });
+      void fetchStatus();
+      return;
+    }
+
+    setActionLoading(null);
+    setActionMessage({ type: "error", text: `Failed to ${actionLabel(job.action)} project.` });
+    void fetchStatus();
   }
 
   useEffect(() => {
@@ -80,29 +137,114 @@ function StatusTab({ name }: { name: string }) {
     return () => clearInterval(interval);
   }, [fetchStatus]);
 
-  async function handleAction(action: "up" | "down" | "restart") {
+  useEffect(() => {
+    return () => {
+      actionWsRef.current?.close();
+      actionWsRef.current = null;
+    };
+  }, []);
+
+  async function handleAction(action: ComposeAction) {
     setActionLoading(action);
     setActionMessage(null);
     setActionOutput("");
+
     try {
       const res = await fetch(`/api/projects/${encodeURIComponent(name)}/${action}`, { method: "POST" });
       const data = await res.json().catch(() => ({}));
-      const output = typeof data?.output === "string" ? data.output : "";
 
       if (!res.ok) {
         setActionMessage({ type: "error", text: `Failed to ${actionLabel(action)} project.` });
-        setActionOutput(output || data?.error || "");
-      } else {
-        setActionMessage({ type: "success", text: `${actionLabel(action)} completed.` });
-        setActionOutput(output);
+        setActionOutput(data?.error || "");
+        setActionLoading(null);
+        return;
       }
-      await fetchStatus();
+
+      const job = data?.job as ComposeJob | undefined;
+      if (!job?.id) {
+        setActionMessage({ type: "error", text: "Invalid job response." });
+        setActionLoading(null);
+        return;
+      }
+
+      applyJobSnapshot(job);
+
+      actionWsRef.current?.close();
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const ws = new WebSocket(`${protocol}//${window.location.host}/ws/jobs/${encodeURIComponent(job.id)}`);
+      actionWsRef.current = ws;
+
+      ws.onmessage = (event) => {
+        let parsed: ComposeJobSocketEvent | undefined;
+        try {
+          parsed = JSON.parse(event.data) as ComposeJobSocketEvent;
+        } catch {
+          return;
+        }
+
+        if (!parsed) return;
+
+        if (parsed.type === "snapshot") {
+          applyJobSnapshot(parsed.job);
+          return;
+        }
+
+        if (parsed.type === "status") {
+          if (parsed.status === "queued") {
+            setActionMessage({ type: "info", text: `${actionLabel(action)} queued...` });
+          } else if (parsed.status === "running") {
+            setActionMessage({ type: "info", text: `${actionLabel(action)} in progress...` });
+          }
+          return;
+        }
+
+        if (parsed.type === "chunk") {
+          appendActionOutput(parsed.chunk);
+          return;
+        }
+
+        if (parsed.type === "done") {
+          setActionOutput(parsed.job.output || "");
+          setActionLoading(null);
+          setActionMessage(
+            parsed.ok
+              ? { type: "success", text: `${actionLabel(parsed.job.action)} completed.` }
+              : { type: "error", text: `Failed to ${actionLabel(parsed.job.action)} project.` }
+          );
+          void fetchStatus();
+          ws.close();
+          return;
+        }
+
+        if (parsed.type === "error") {
+          setActionMessage({ type: "error", text: parsed.message || "Live updates failed." });
+          setActionLoading(null);
+        }
+      };
+
+      ws.onclose = () => {
+        if (actionWsRef.current === ws) {
+          actionWsRef.current = null;
+        }
+      };
+
+      ws.onerror = () => {
+        setActionMessage({ type: "error", text: "Live updates disconnected." });
+        setActionLoading(null);
+      };
     } catch {
       setActionMessage({ type: "error", text: `Failed to ${actionLabel(action)} project.` });
-    } finally {
       setActionLoading(null);
     }
   }
+
+  const actionMessageClassName = actionMessage
+    ? actionMessage.type === "success"
+      ? "text-green-600"
+      : actionMessage.type === "info"
+        ? "text-muted-foreground"
+        : "text-destructive"
+    : "";
 
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
   if (!status) return <p className="text-destructive">Failed to load project status.</p>;
@@ -129,7 +271,7 @@ function StatusTab({ name }: { name: string }) {
       <CardContent>
         {actionMessage && (
           <div className="space-y-2 mb-4">
-            <p className={`text-sm ${actionMessage.type === "success" ? "text-green-600" : "text-destructive"}`}>
+            <p className={`text-sm ${actionMessageClassName}`}>
               {actionMessage.text}
             </p>
             {actionOutput && (

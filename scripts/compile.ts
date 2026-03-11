@@ -115,6 +115,7 @@ import { serve } from "bun";
 import { runCLI } from "../src/cli";
 import { apiRoutes } from "../src/routes";
 import { handleUpgrade, websocketHandler } from "../src/lib/websocket";
+import { startComposeJobWorker } from "../src/lib/jobs";
 ${importLines.join("\n")}
 
 const command = process.argv[2];
@@ -123,6 +124,8 @@ if (command && command !== "serve") {
   await runCLI(command);
   process.exit(0);
 }
+
+await startComposeJobWorker();
 
 const htmlResponse = () => new Response(Bun.file(f${htmlIdx}), { headers: { "content-type": "text/html;charset=utf-8" } });
 

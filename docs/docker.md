@@ -32,6 +32,11 @@ Use `projects` to add individual project paths. The `name` field is optional and
 
 The project list is cached in memory. Use the **Refresh** button on the dashboard or call `POST /api/projects/refresh` to rescan.
 
+### Action queue
+
+Project actions (**Up**, **Down**, **Restart**) run through an embedded `bunqueue` queue persisted in SQLite (`data/bunqueue.sqlite`).  
+The UI subscribes to live job output over WebSocket.
+
 ### Creating stacks from UI
 
 From the dashboard, use **Create Stack** to create a new stack directory under `../stacks` with a `docker-compose.yml` file.
@@ -82,17 +87,19 @@ All endpoints require authentication (cookie-based session).
 | GET | `/api/projects` | List all projects with container counts |
 | POST | `/api/projects/refresh` | Rescan config and refresh project list |
 | GET | `/api/projects/:name/status` | Get detailed container status |
-| POST | `/api/projects/:name/up` | Run `docker compose up -d` |
-| POST | `/api/projects/:name/down` | Run `docker compose down` |
-| POST | `/api/projects/:name/restart` | Run `docker compose restart` |
+| POST | `/api/projects/:name/up` | Enqueue `docker compose up -d` job |
+| POST | `/api/projects/:name/down` | Enqueue `docker compose down` job |
+| POST | `/api/projects/:name/restart` | Enqueue `docker compose restart` job |
 | GET | `/api/projects/:name/compose` | Read compose file content |
 | PUT | `/api/projects/:name/compose` | Write compose file content |
+| GET | `/api/jobs/:id` | Get compose job snapshot/status |
 
 ### WebSocket
 
 | Endpoint | Description |
 |----------|-------------|
 | `ws://host/ws/logs/:name` | Stream real-time Docker Compose logs |
+| `ws://host/ws/jobs/:id` | Stream real-time compose job events/output |
 
 The WebSocket connection authenticates via session cookies. It streams both stdout and stderr from `docker compose logs -f --tail 100`. The log process is automatically killed when the connection closes.
 
