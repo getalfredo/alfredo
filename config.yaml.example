@@ -1,0 +1,12 @@
+# Alfredo - Docker Compose project configuration
+#
+# scan: directories to scan for subdirectories containing docker-compose.yml / compose.yml
+# projects: explicit project paths (override scanned ones)
+
+scan:
+  - ../stacks
+
+# projects:
+#   - name: My Redis
+#     path: /opt/apps/redis
+#   - path: /opt/apps/postgres

@@ -133,6 +133,7 @@ const result = await Bun.build({
   outdir,
   plugins: [plugin],
   minify: true,
+  publicPath: "/",
   target: "browser",
   sourcemap: "linked",
   define: {

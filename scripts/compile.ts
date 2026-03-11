@@ -48,6 +48,7 @@ const buildResult = await Bun.build({
   outdir: publicDir,
   plugins: [tailwind],
   minify: true,
+  publicPath: "/",
   target: "browser",
   sourcemap: "none",
   define: {
@@ -113,6 +114,7 @@ const prodServerCode = `import "../src/lib/init-env";
 import { serve } from "bun";
 import { runCLI } from "../src/cli";
 import { apiRoutes } from "../src/routes";
+import { handleUpgrade, websocketHandler } from "../src/lib/websocket";
 ${importLines.join("\n")}
 
 const command = process.argv[2];
@@ -128,9 +130,20 @@ const server = serve({
   routes: {
     ...apiRoutes,
 ${staticRouteLines.join("\n")}
+    "/ws/*": (req, server) => handleUpgrade(req, server),
     "/": htmlResponse,
     "/*": htmlResponse,
   },
+
+  fetch(req, server) {
+    const url = new URL(req.url);
+    if (url.pathname.startsWith("/ws/")) {
+      return handleUpgrade(req, server);
+    }
+    return htmlResponse();
+  },
+
+  websocket: websocketHandler,
 });
 
 console.log(\`Server running at \${server.url}\`);

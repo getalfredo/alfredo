@@ -80,6 +80,8 @@ After deploy, the binary auto-initializes on first run:
 1. Creates `data/` directory for the SQLite database
 2. Generates `.env` with a random `BETTER_AUTH_SECRET`
 3. Creates the database tables
+4. Generates `config.yaml` with default settings
+5. Creates `/home/<APP_USER>/stacks/` directory for Docker Compose projects
 
 Create your first user:
 
@@ -98,11 +100,13 @@ sudo systemctl restart alfredo
 
 ```
 /home/<APP_USER>/
-└── app/
-    ├── alfredo          # The compiled binary
-    ├── .env             # Auto-generated on first run
-    └── data/
-        └── auth.db      # SQLite database
+├── app/
+│   ├── alfredo          # The compiled binary
+│   ├── .env             # Auto-generated on first run
+│   ├── config.yaml      # Docker project configuration (auto-generated)
+│   └── data/
+│       └── auth.db      # SQLite database
+└── stacks/              # Default directory for Docker Compose projects
 
 /etc/systemd/system/
 └── alfredo.service      # systemd service file
