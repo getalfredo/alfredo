@@ -2,7 +2,9 @@ import { hashPassword } from "better-auth/crypto";
 import Database from "bun:sqlite";
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { mkdirSync } from "node:fs";
 
+mkdirSync("data", { recursive: true });
 const db = new Database("data/auth.db");
 const isTTY = process.stdin.isTTY;
 

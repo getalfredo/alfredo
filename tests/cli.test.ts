@@ -6,10 +6,9 @@ import { createUser, listUsers, resetPassword, remove2FA } from "../src/cli";
 
 let db: Database;
 
-beforeAll(async () => {
+beforeAll(() => {
   db = new Database(":memory:");
-  const { migrate } = createAuth(db);
-  await migrate();
+  createAuth(db);
 });
 
 beforeEach(() => {

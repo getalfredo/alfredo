@@ -7,7 +7,7 @@ let auth: ReturnType<typeof createAuth>["auth"];
 let db: Database;
 
 beforeAll(async () => {
-  const setup = await setupTestAuth();
+  const setup = setupTestAuth();
   auth = setup.auth;
   db = setup.database;
   await createTestUser(db, "user@test.com", "password123");

@@ -3,10 +3,9 @@ import { hashPassword } from "better-auth/crypto";
 import crypto from "node:crypto";
 import { createAuth } from "../src/lib/auth";
 
-export async function setupTestAuth() {
+export function setupTestAuth() {
   const database = new Database(":memory:");
-  const { auth, migrate } = createAuth(database);
-  await migrate();
+  const { auth } = createAuth(database);
   return { auth, database };
 }
 

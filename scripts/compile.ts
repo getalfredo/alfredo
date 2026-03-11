@@ -109,41 +109,31 @@ const staticRouteLines = builtFiles
     return `    "/${f}": () => new Response(Bun.file(f${i}), { headers: { "content-type": "${mime}" } }),`;
   });
 
-// Read the original server source and extract the API routes
-// by removing the HTML import and the "/*" route
-const sourceServer = await Bun.file(path.join(process.cwd(), "src/index.tsx")).text();
+const prodServerCode = `import "../src/lib/init-env";
+import { serve } from "bun";
+import { runCLI } from "../src/cli";
+import { apiRoutes } from "../src/routes";
+${importLines.join("\n")}
 
-// Extract route definitions (lines between "routes: {" and "development:")
-const routeBlockMatch = sourceServer.match(
-  /routes:\s*\{([\s\S]*?)\},\s*\n\s*development:/,
-);
+const command = process.argv[2];
 
-// Extract only the API route entries (skip the "/*" HTML route)
-let apiRouteLines = "";
-if (routeBlockMatch) {
-  const routeBlock = routeBlockMatch[1];
-  // Remove the "/*": index line and any comments before it
-  apiRouteLines = routeBlock
-    .replace(/\/\/.*Serve index\.html.*\n/g, "")
-    .replace(/\s*["']\/\*["']\s*:\s*index\s*,?\s*\n/g, "\n")
-    .trim();
+if (command && command !== "serve") {
+  await runCLI(command);
+  process.exit(0);
 }
 
-const prodServerCode = `import { serve } from "bun";
-${importLines.join("\n")}
+const htmlResponse = () => new Response(Bun.file(f${htmlIdx}), { headers: { "content-type": "text/html;charset=utf-8" } });
 
 const server = serve({
   routes: {
+    ...apiRoutes,
 ${staticRouteLines.join("\n")}
-    "/": () => new Response(Bun.file(f${htmlIdx}), { headers: { "content-type": "text/html;charset=utf-8" } }),
-
-    ${apiRouteLines}
-
-    "/*": () => new Response(Bun.file(f${htmlIdx}), { headers: { "content-type": "text/html;charset=utf-8" } }),
+    "/": htmlResponse,
+    "/*": htmlResponse,
   },
 });
 
-console.log(\`🚀 Server running at \${server.url}\`);
+console.log(\`Server running at \${server.url}\`);
 `;
 
 await Bun.write(prodServerPath, prodServerCode);
