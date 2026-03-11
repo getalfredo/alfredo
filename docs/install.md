@@ -7,19 +7,36 @@
 
 ## Configuration
 
-Copy `.env.example` to `.env` and configure:
+### Local development
+
+On first run, a `.env` file is generated automatically with a random `BETTER_AUTH_SECRET`. You can also create it manually:
 
 ```bash
 cp .env.example .env
 ```
 
+### Environment variables
+
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DEPLOY_USER` | SSH user to connect to the server | (required) |
-| `DEPLOY_HOST` | Server hostname or IP | (required) |
+| `BETTER_AUTH_SECRET` | Secret key for signing sessions (auto-generated) | (required) |
+| `BETTER_AUTH_URL` | Base URL of the application | `http://localhost:3000` |
+| `SECURE_COOKIES` | Set to `true` when behind HTTPS reverse proxy | `false` |
+| `DEPLOY_USER` | SSH user to connect to the server | (required for deploy) |
+| `DEPLOY_HOST` | Server hostname or IP | (required for deploy) |
 | `DEPLOY_PORT` | SSH port | `22` |
 | `APP_USER` | System user that owns and runs the app | `alfredo` |
-| `APP_USER_CREATE` | Create the user if it doesn't exist (`true`/`false`) | `false` |
+| `APP_USER_CREATE` | Create the user if it doesn't exist | `false` |
+
+### HTTPS / Reverse proxy
+
+The app runs on HTTP by default. When you set up a reverse proxy (nginx, Caddy, etc.) with HTTPS:
+
+1. Set `SECURE_COOKIES=true` in `.env`
+2. Set `BETTER_AUTH_URL` to your HTTPS URL (e.g. `https://app.example.com`)
+3. Restart the app
+
+Without `SECURE_COOKIES=true` behind HTTPS, authentication cookies will not work correctly.
 
 ### App user
 
@@ -56,12 +73,36 @@ This will:
 3. Upload the binary to the server
 4. Configure and start a systemd service
 
+## First run on the server
+
+After deploy, the binary auto-initializes on first run:
+
+1. Creates `data/` directory for the SQLite database
+2. Generates `.env` with a random `BETTER_AUTH_SECRET`
+3. Creates the database tables
+
+Create your first user:
+
+```bash
+cd /home/<APP_USER>/app
+./alfredo user:create
+```
+
+Then restart the service:
+
+```bash
+sudo systemctl restart alfredo
+```
+
 ## What gets installed on the server
 
 ```
 /home/<APP_USER>/
 └── app/
-    └── alfredo          # The compiled binary
+    ├── alfredo          # The compiled binary
+    ├── .env             # Auto-generated on first run
+    └── data/
+        └── auth.db      # SQLite database
 
 /etc/systemd/system/
 └── alfredo.service      # systemd service file
