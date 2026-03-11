@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.tsx",
-    "start": "NODE_ENV=production bun src/index.tsx",
+    "dev": "bun --hot src/index.tsx serve",
+    "start": "NODE_ENV=production bun src/index.tsx serve",
     "build": "bun run scripts/build.ts",
     "compile": "bun run scripts/compile.ts",
     "compile:linux": "bun run scripts/compile.ts --target=linux-x64",
@@ -15,10 +15,12 @@
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
+    "better-auth": "^1.5.4",
     "bun-plugin-tailwind": "^0.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.545.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19",
     "react-dom": "^19",
     "tailwind-merge": "^3.3.1"

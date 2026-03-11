@@ -1,39 +1,84 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APITester } from "./APITester";
+import { useState } from "react";
+import { authClient } from "./lib/auth-client";
+import { Login } from "./pages/Login";
+import { TwoFactorSetup } from "./pages/TwoFactorSetup";
+import { TwoFactorNudge } from "./components/TwoFactorNudge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import "./index.css";
 
-import logo from "./logo.svg";
-import reactLogo from "./react.svg";
+function Dashboard() {
+  const { data: session } = authClient.useSession();
+  const [showSetup2FA, setShowSetup2FA] = useState(false);
 
-export function App() {
-  return (
-    <div className="container mx-auto p-8 text-center relative z-10">
-      <div className="flex justify-center items-center gap-8 mb-8">
-        <img
-          src={logo}
-          alt="Bun Logo"
-          className="h-36 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
-        />
-        <img
-          src={reactLogo}
-          alt="React Logo"
-          className="h-36 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#61dafbaa] [animation:spin_20s_linear_infinite]"
+  const twoFactorEnabled = (session?.user as any)?.twoFactorEnabled;
+
+  async function handleSignOut() {
+    await authClient.signOut();
+    window.location.href = "/login";
+  }
+
+  if (showSetup2FA) {
+    return (
+      <div className="container mx-auto p-8 max-w-lg">
+        <TwoFactorSetup
+          onComplete={() => {
+            setShowSetup2FA(false);
+            window.location.reload();
+          }}
         />
       </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-8 max-w-2xl space-y-6">
+      {!twoFactorEnabled && (
+        <TwoFactorNudge onSetup={() => setShowSetup2FA(true)} />
+      )}
       <Card>
-        <CardHeader className="gap-4">
-          <CardTitle className="text-3xl font-bold">Bun + React</CardTitle>
-          <CardDescription>
-            Edit <code className="rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono">src/App.tsx</code> and save to
-            test HMR
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Dashboard</CardTitle>
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
+            Sign out
+          </Button>
         </CardHeader>
         <CardContent>
-          <APITester />
+          <p className="text-muted-foreground">
+            Signed in as <span className="font-medium text-foreground">{session?.user?.email}</span>
+          </p>
         </CardContent>
       </Card>
     </div>
   );
+}
+
+export function App() {
+  const { data: session, isPending } = authClient.useSession();
+  const path = window.location.pathname;
+
+  if (isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (path === "/login") {
+    if (session) {
+      window.location.href = "/";
+      return null;
+    }
+    return <Login />;
+  }
+
+  if (!session) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  return <Dashboard />;
 }
 
 export default App;
