@@ -73,6 +73,12 @@ By default, stacks are discovered in `../stacks/` (sibling directory of `app/` w
 | `bun run deploy` | Compile and deploy to production server |
 | `bun test` | Run tests |
 
+Published Linux binaries can also be installed with:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+```
+
 ## CLI commands
 
 User management is done via CLI. In development use `bun src/index.tsx <command>`, in production use `./alfredo <command>`.

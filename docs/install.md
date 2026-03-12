@@ -5,6 +5,30 @@
 - A Linux server (Ubuntu/Debian) with SSH access
 - Bun installed locally for compilation
 
+## Install from GitHub Releases
+
+If you only want the standalone binary, use the installer script:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+```
+
+This downloads the latest published `alfredo-linux-x64` release asset and installs it as `alfredo`.
+
+Optional environment variables:
+
+```bash
+ALFREDO_VERSION=v0.1.0 bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+ALFREDO_INSTALL_DIR="$HOME/.local/bin" bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+```
+
+Notes:
+
+- The installer currently publishes and installs the Linux x64 binary only.
+- If `/usr/local/bin` is writable, the binary is installed there.
+- Otherwise the installer falls back to `$HOME/.local/bin`.
+- The script only downloads the binary and marks it executable. It does not create users, services, or config files.
+
 ## Configuration
 
 ### Local development
@@ -72,6 +96,17 @@ This will:
 2. Create the system user on the server (if `APP_USER_CREATE=true`)
 3. Upload the binary to the server
 4. Configure and start a systemd service
+
+## Release workflow
+
+GitHub Actions builds the linux-x64 binary on every push to `main`, every pull request, and manual runs.
+
+When you push a tag that matches `v*`, the workflow also publishes:
+
+- `alfredo-linux-x64`
+- `alfredo-linux-x64.sha256`
+
+to the corresponding GitHub Release. The installer script downloads from that release endpoint.
 
 ## First run on the server
 

@@ -1,5 +1,11 @@
 # bun-react-tailwind-shadcn-template
 
+Install the published Linux binary:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+```
+
 To install dependencies:
 
 ```bash
