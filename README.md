@@ -1,4 +1,6 @@
-# bun-react-tailwind-shadcn-template
+# Alfredo
+
+A friendly assistant for Docker Compose files, and templates.
 
 Install the published Linux binary:
 
@@ -6,32 +8,4 @@ Install the published Linux binary:
 bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
 ```
 
-To install dependencies:
-
-```bash
-bun install
-```
-
-To start a development server:
-
-```bash
-bun dev
-```
-
-To run for production:
-
-```bash
-bun start
-```
-
-To trigger a release workflow that creates the next tag and GitHub release:
-
-```bash
-bin/release patch
-bin/release minor
-bin/release major
-```
-
-This requires the GitHub CLI (`gh`) to be installed and authenticated.
-
-This project was created using `bun init` in bun v1.3.0. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Documentation in [Docs](./docs/index.md)
