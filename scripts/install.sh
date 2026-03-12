@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${ALFREDO_REPO:-getalfredo/bunalfredo}"
+REPO="${ALFREDO_REPO:-getalfredo/alfredo}"
 VERSION="${ALFREDO_VERSION:-latest}"
 BINARY_NAME="alfredo"
 

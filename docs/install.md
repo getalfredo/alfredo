@@ -10,7 +10,7 @@
 If you only want the standalone binary, use the installer script:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
 ```
 
 This downloads the latest published `alfredo-linux-x64` release asset and installs it as `alfredo`.
@@ -18,8 +18,8 @@ This downloads the latest published `alfredo-linux-x64` release asset and instal
 Optional environment variables:
 
 ```bash
-ALFREDO_VERSION=v0.1.0 bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
-ALFREDO_INSTALL_DIR="$HOME/.local/bin" bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+ALFREDO_VERSION=v0.1.0 bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
+ALFREDO_INSTALL_DIR="$HOME/.local/bin" bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
 ```
 
 Notes:

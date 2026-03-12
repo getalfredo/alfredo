@@ -76,7 +76,7 @@ By default, stacks are discovered in `../stacks/` (sibling directory of `app/` w
 Published Linux binaries can also be installed with:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/bunalfredo/main/scripts/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
 ```
 
 ## CLI commands
