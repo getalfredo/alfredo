@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: bin/release <patch|minor|major>
+
+Dispatch the GitHub Actions release workflow with the selected version bump.
+EOF
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -ne 1 ]]; then
+  usage >&2
+  exit 1
+fi
+
+version_bump="$1"
+
+case "$version_bump" in
+  patch|minor|major)
+    ;;
+  *)
+    echo "Invalid release type: $version_bump" >&2
+    usage >&2
+    exit 1
+    ;;
+esac
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "GitHub CLI ('gh') is required to run releases." >&2
+  exit 1
+fi
+
+if ! gh auth status >/dev/null 2>&1; then
+  echo "GitHub CLI is not authenticated. Run 'gh auth login' first." >&2
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+cd "$REPO_ROOT"
+
+echo "Dispatching release workflow for '$version_bump' on 'main'..."
+gh workflow run release.yml --ref main -f version="$version_bump"
+echo "Workflow dispatched. Inspect the latest run with: gh run list --workflow release.yml --limit 1"

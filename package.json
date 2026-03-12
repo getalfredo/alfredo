@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "bun --hot src/index.tsx serve",
     "start": "NODE_ENV=production bun src/index.tsx serve",
-    "build": "bun run scripts/build.ts",
-    "compile": "bun run scripts/compile.ts",
-    "compile:linux": "bun run scripts/compile.ts --target=linux-x64",
-    "deploy": "bash scripts/deploy.sh"
+    "build": "bun run bin/build.ts",
+    "compile": "bun run bin/compile.ts",
+    "compile:linux": "bun run bin/compile.ts --target=linux-x64",
+    "deploy": "bash bin/deploy.sh"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",

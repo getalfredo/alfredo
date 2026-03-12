@@ -24,4 +24,14 @@ To run for production:
 bun start
 ```
 
+To trigger a release workflow that creates the next tag and GitHub release:
+
+```bash
+bin/release patch
+bin/release minor
+bin/release major
+```
+
+This requires the GitHub CLI (`gh`) to be installed and authenticated.
+
 This project was created using `bun init` in bun v1.3.0. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
