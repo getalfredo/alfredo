@@ -1,11 +1,13 @@
 # Installation and deployment
 
-## Prerequisites
+## Install the published binary
 
-- A Linux server (Ubuntu/Debian) with SSH access
-- Bun installed locally for compilation
+### Prerequisites
 
-## Install from GitHub Releases
+- A Linux x64 host
+- `curl` or `wget`
+
+### Install from GitHub Releases
 
 If you only want the standalone binary, use the installer script:
 
@@ -15,19 +17,28 @@ bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scri
 
 This downloads the latest published `alfredo-linux-x64` release asset and installs it as `alfredo`.
 
-Optional environment variables:
+Optional environment variables and arguments:
 
 ```bash
 ALFREDO_VERSION=v0.1.0 bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
 ALFREDO_INSTALL_DIR="$HOME/.local/bin" bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh) -- "$HOME/.local/bin"
 ```
 
 Notes:
 
-- The installer currently publishes and installs the Linux x64 binary only.
+- The installer supports Linux x64 only.
 - If `/usr/local/bin` is writable, the binary is installed there.
 - Otherwise the installer falls back to `$HOME/.local/bin`.
 - The script only downloads the binary and marks it executable. It does not create users, services, or config files.
+- The installer downloads from the latest published GitHub Release, so it requires at least one published release to exist.
+
+## Build and deploy from source
+
+### Prerequisites
+
+- A Linux x64 server (Ubuntu/Debian) with SSH access
+- Bun installed locally for compilation
 
 ## Configuration
 
@@ -99,14 +110,22 @@ This will:
 
 ## Release workflow
 
-GitHub Actions builds the linux-x64 binary on every push to `main`, every pull request, and manual runs.
+GitHub Releases are published by the manual `Build and release binary` GitHub Actions workflow (`workflow_dispatch`).
 
-When you push a tag that matches `v*`, the workflow also publishes:
+That workflow:
+
+1. Runs the test suite
+2. Builds the linux-x64 standalone binary
+3. Calculates the next semantic version tag
+4. Creates and pushes the Git tag
+5. Publishes the GitHub Release assets
+
+The published release contains:
 
 - `alfredo-linux-x64`
 - `alfredo-linux-x64.sha256`
 
-to the corresponding GitHub Release. The installer script downloads from that release endpoint.
+The installer script downloads from the GitHub Release endpoint above.
 
 ## First run on the server
 

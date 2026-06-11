@@ -9,7 +9,16 @@ usage() {
   cat <<'EOF'
 Usage: install.sh [install-dir]
 
-Downloads the published Alfredo binary from GitHub Releases and installs it as `alfredo`.
+Downloads the published Alfredo Linux x64 binary from GitHub Releases and installs it as `alfredo`.
+
+Requirements:
+  - Linux x64
+  - curl or wget
+
+Examples:
+  install.sh
+  install.sh "$HOME/.local/bin"
+  ALFREDO_VERSION=v0.1.0 install.sh
 
 Environment variables:
   ALFREDO_VERSION      Release tag to install (default: latest)

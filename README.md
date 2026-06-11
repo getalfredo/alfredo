@@ -1,11 +1,5 @@
 # Alfredo
 
-A friendly assistant for Docker Compose files, and templates.
-
-Install the published Linux binary:
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scripts/install.sh)
-```
+A friendly assistant for managing Docker Compose projects, with Templates included.
 
 Documentation in [Docs](./docs/index.md)
