@@ -12,6 +12,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/getalfredo/alfredo/main/scri
 If running as root, the binary gets placed in ~/alfredo
 Else, it gets placed in ~/alfredoapp/alfredo
 
+For local development without a VPS, see [Local VPS (containers)](./local-vps.md).
+
 ## First Run Workflow
 
 The `./alfredo first-run`, is the first step to prepare/ensure the VPS is ready for installing Alfredo service.

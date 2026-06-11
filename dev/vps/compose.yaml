@@ -1,0 +1,75 @@
+name: alfredo-vps
+
+# Two fake VPSes: gotham (port 3000) and wayne (port 3001).
+# Each pair = one dind daemon (the VPS's Docker engine) + one Alfredo instance.
+
+x-dind: &dind
+  image: docker:28-dind
+  privileged: true
+  environment:
+    DOCKER_TLS_CERTDIR: ""
+  healthcheck:
+    test: ["CMD", "docker", "info"]
+    interval: 3s
+    timeout: 5s
+    retries: 20
+    start_period: 10s
+
+x-alfredo: &alfredo
+  build: .
+  restart: unless-stopped
+
+services:
+  gotham-dind:
+    <<: *dind
+    volumes:
+      - gotham-dind-data:/var/lib/docker
+      # Stacks must be visible at the same path as in the alfredo container,
+      # so bind mounts inside managed compose projects resolve correctly.
+      - gotham-stacks:/home/alfredo/stacks
+
+  gotham:
+    <<: *alfredo
+    environment:
+      DOCKER_HOST: tcp://gotham-dind:2375
+      BETTER_AUTH_URL: http://localhost:${GOTHAM_HTTP_PORT:-3000}
+      NODE_ENV: production
+    ports:
+      - "${GOTHAM_HTTP_PORT:-3000}:3000"
+    volumes:
+      - ../../dist:/dist:ro
+      - gotham-app-data:/home/alfredo/app
+      - gotham-stacks:/home/alfredo/stacks
+    depends_on:
+      gotham-dind:
+        condition: service_healthy
+
+  wayne-dind:
+    <<: *dind
+    volumes:
+      - wayne-dind-data:/var/lib/docker
+      - wayne-stacks:/home/alfredo/stacks
+
+  wayne:
+    <<: *alfredo
+    environment:
+      DOCKER_HOST: tcp://wayne-dind:2375
+      BETTER_AUTH_URL: http://localhost:${WAYNE_HTTP_PORT:-3001}
+      NODE_ENV: production
+    ports:
+      - "${WAYNE_HTTP_PORT:-3001}:3000"
+    volumes:
+      - ../../dist:/dist:ro
+      - wayne-app-data:/home/alfredo/app
+      - wayne-stacks:/home/alfredo/stacks
+    depends_on:
+      wayne-dind:
+        condition: service_healthy
+
+volumes:
+  gotham-dind-data:
+  gotham-app-data:
+  gotham-stacks:
+  wayne-dind-data:
+  wayne-app-data:
+  wayne-stacks:

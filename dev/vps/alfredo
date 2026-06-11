@@ -1,0 +1,32 @@
+#!/bin/sh
+# Runs the host-compiled Alfredo binary from the /dist bind mount,
+# as the non-root `alfredo` user (mirroring the systemd service on a VPS).
+set -e
+
+case "$(uname -m)" in
+  aarch64 | arm64) BIN=/dist/alfredo-linux-arm64 ;;
+  x86_64 | amd64) BIN=/dist/alfredo-linux-x64 ;;
+  *)
+    echo "Unsupported architecture: $(uname -m)" >&2
+    exit 1
+    ;;
+esac
+
+if [ ! -x "$BIN" ]; then
+  echo "Missing $BIN — compile it on the host first:" >&2
+  echo "  bun run vps:compile" >&2
+  exit 1
+fi
+
+[ "$#" -eq 0 ] && set -- serve
+
+cd /home/alfredo/app
+export HOME=/home/alfredo
+
+if [ "$(id -u)" = "0" ]; then
+  # Named volumes start out root-owned; fix before dropping privileges.
+  chown alfredo:alfredo /home/alfredo/app /home/alfredo/stacks
+  exec setpriv --reuid=alfredo --regid=alfredo --init-groups "$BIN" "$@"
+fi
+
+exec "$BIN" "$@"

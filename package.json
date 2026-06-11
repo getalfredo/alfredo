@@ -9,7 +9,14 @@
     "build": "bun run bin/build.ts",
     "compile": "bun run bin/compile.ts",
     "compile:linux": "bun run bin/compile.ts --target=linux-x64",
-    "deploy": "bash bin/deploy.sh"
+    "compile:linux-arm64": "bun run bin/compile.ts --target=linux-arm64",
+    "deploy": "bash bin/deploy.sh",
+    "vps:compile": "bun run bin/compile.ts --target=linux-$(uname -m | sed -e 's/x86_64/x64/' -e 's/aarch64/arm64/')",
+    "vps:up": "bun run vps:compile && docker compose -f dev/vps/compose.yaml up -d --build",
+    "vps:restart": "bun run vps:compile && docker compose -f dev/vps/compose.yaml restart gotham wayne",
+    "vps:logs": "docker compose -f dev/vps/compose.yaml logs -f gotham wayne",
+    "vps:default-users": "sh dev/vps/default-users.sh",
+    "vps:reset": "docker compose -f dev/vps/compose.yaml down -v"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",

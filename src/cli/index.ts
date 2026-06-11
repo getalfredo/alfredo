@@ -8,8 +8,16 @@ mkdirSync("data", { recursive: true });
 const db = new Database("data/auth.db");
 const isTTY = process.stdin.isTTY;
 
-// Single fd for stdin to handle piped input properly
-const stdinFd = fs.openSync("/dev/stdin", "r");
+// Single fd for stdin to handle piped input properly.
+// Reopening /dev/stdin fails with EACCES when privileges were dropped
+// (su/sudo/setpriv): the tty or pipe still belongs to the original user.
+// The inherited fd 0 is already open, so use it directly in that case.
+let stdinFd: number;
+try {
+  stdinFd = fs.openSync("/dev/stdin", "r");
+} catch {
+  stdinFd = 0;
+}
 const stdinBuf = Buffer.alloc(4096);
 
 function readLine(): string {
