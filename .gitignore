@@ -39,3 +39,4 @@ data/
 # Runtime config (auto-generated)
 config.yaml
 stacks/
+.alp-river/
