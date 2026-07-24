@@ -4,8 +4,8 @@ Run Alfredo locally as if it were deployed to real servers, without a VPS. The c
 
 | VPS | URL | Services |
 |-----|-----|----------|
-| gotham | http://localhost:3000 | `gotham` + `gotham-dind` |
-| wayne | http://localhost:3001 | `wayne` + `wayne-dind` |
+| windsor | http://localhost:3000 | `windsor` + `windsor-dind` |
+| dover | http://localhost:3001 | `dover` + `dover-dind` |
 
 Each VPS is a pair of containers:
 
@@ -21,13 +21,13 @@ The binary is compiled on the host for your architecture (`linux-arm64` on Apple
 bun run vps:up
 
 # Create the default dev users on both VPSes in one go
-# (gotham@gotham.com and wayne@wayne.com, password: "password";
+# (windsor@windsor.com and dover@dover.com, password: "password";
 #  re-running resets their passwords back to the default)
 bun run vps:default-users
 
 # Open the apps
-open http://localhost:3000   # gotham
-open http://localhost:3001   # wayne
+open http://localhost:3000   # windsor
+open http://localhost:3001   # dover
 
 # After changing app code: recompile + restart both
 bun run vps:restart
@@ -43,9 +43,9 @@ Stacks created through the UI live in each VPS's `stacks` volume, mounted at `/h
 
 ## Notes
 
-- Override ports with `GOTHAM_HTTP_PORT` / `WAYNE_HTTP_PORT`, e.g. `WAYNE_HTTP_PORT=3101 bun run vps:up`.
+- Override ports with `WINDSOR_HTTP_PORT` / `DOVER_HTTP_PORT`, e.g. `DOVER_HTTP_PORT=3101 bun run vps:up`.
 - Ports published by managed stacks open inside that VPS's dind container, not on your machine — same as on a real VPS, where only Alfredo (and whatever you proxy) is reachable.
 - To reach a managed stack's port from your machine, add a mapping to the corresponding `*-dind` service in `dev/vps/compose.yaml` (e.g. `"8080:8080"`).
-- To operate on a single VPS, target its services directly: `docker compose -f dev/vps/compose.yaml restart wayne`.
-- To stop without wiping data, or to create a user interactively, use docker compose directly: `docker compose -f dev/vps/compose.yaml stop` / `docker compose -f dev/vps/compose.yaml exec wayne alfredo user:create`.
+- To operate on a single VPS, target its services directly: `docker compose -f dev/vps/compose.yaml restart dover`.
+- To stop without wiping data, or to create a user interactively, use docker compose directly: `docker compose -f dev/vps/compose.yaml stop` / `docker compose -f dev/vps/compose.yaml exec dover alfredo user:create`.
 - This setup skips the SSH/systemd deploy path (`bun run deploy`); it tests the application itself, not the installer.

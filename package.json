@@ -14,8 +14,8 @@
     "vps:compile": "bun run bin/compile.ts --target=linux-$(uname -m | sed -e 's/x86_64/x64/' -e 's/aarch64/arm64/')",
     "vps:up": "bun run vps:compile && docker compose -f dev/vps/compose.yaml up -d --build",
     "vps:down": "docker compose -f dev/vps/compose.yaml down",
-    "vps:restart": "bun run vps:compile && docker compose -f dev/vps/compose.yaml restart gotham wayne",
-    "vps:logs": "docker compose -f dev/vps/compose.yaml logs -f gotham wayne",
+    "vps:restart": "bun run vps:compile && docker compose -f dev/vps/compose.yaml restart windsor dover",
+    "vps:logs": "docker compose -f dev/vps/compose.yaml logs -f windsor dover",
     "vps:default-users": "sh dev/vps/default-users.sh",
     "vps:reset": "docker compose -f dev/vps/compose.yaml down -v"
   },
