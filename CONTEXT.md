@@ -30,6 +30,14 @@ _Avoid_: Project (for a compose project), app
 The file set and resolved environment that one deploy of a Stack runs. HQ stores every deployed revision for restore and rollback.
 _Avoid_: Version, release
 
+**Machine check**:
+One audited fact about the host a Porter runs on, such as whether SSH password authentication is disabled. Machine checks report; they never change the host.
+_Avoid_: Hardening (for the check itself), health check (reserved for services)
+
+**Baseline**:
+The set of Machine checks that must pass for a Porter's host to count as secured. Checks outside the Baseline are informational only.
+_Avoid_: Profile, policy
+
 **Admin**:
 An installation-wide role responsible for infrastructure and project membership.
 _Avoid_: Operator (for installation-wide administration)
