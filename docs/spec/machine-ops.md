@@ -87,7 +87,7 @@ The Porter list shows one badge per Porter:
 
 While a Porter is Offline, HQ shows the cached result marked as stale.
 
-HQ doesn't run Machine checks on its own host. To audit the HQ machine, the Admin installs a Porter on it.
+HQ doesn't run Machine checks itself. The HQ Porter, which every installation has, audits the HQ host, as the [reverse proxy spec](reverse-proxy.md#the-hq-porter) describes.
 
 ## Handoff boundaries
 
