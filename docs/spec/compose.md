@@ -22,7 +22,7 @@ HQ has no compose editor. Stack behavior comes only from sources and templates, 
 
 ## State on HQ
 
-HQ stores every deployed Stack revision on its filesystem, next to the owning project or Workspace. Stored revisions are what restore and rollback use. [Secrets storage & wiring](https://github.com/getalfredo/alfredo/issues/7) defines where environment values live and how HQ resolves them.
+HQ stores every deployed Stack revision on its filesystem, next to the owning project or Workspace. **Restore** reruns the current revision exactly as stored. Rollback reuses an earlier revision's files with the current environment, as the [projects spec](projects.md#revisions-and-rollback) describes. [Secrets storage & wiring](https://github.com/getalfredo/alfredo/issues/7) defines where environment values live and how HQ resolves them.
 
 HQ keeps an append-only operation log per Stack, recording who ran which operation, when, and with what result. Project members see it. Full operation output stays in Porter's rotated operation logs, and HQ fetches it on demand, following the [Porter spec](porter.md#operations-and-disconnection).
 

@@ -4,6 +4,30 @@ Alfredo organizes projects and their services for an administrator and invited c
 
 ## Language
 
+**Project**:
+One application that Alfredo deploys, with its Stack, Workspaces, variables, Routes, and members. A project has exactly one Stack, on a Porter fixed at creation.
+_Avoid_: App, environment
+
+**Source**:
+The Git repository, branch, and build settings a project's Stack is built from, either a compose file or a Railpack app.
+_Avoid_: Repo (for the whole configuration), build pack
+
+**Deploy**:
+Running the source branch's latest commit with the project's current environment as a new Stack revision.
+_Avoid_: Release (reserved for the release command), rollout
+
+**Release command**:
+An optional command a project runs once per deploy, after the build and before services start, such as a migration or `convex deploy`.
+_Avoid_: Hook, pre-deploy script
+
+**Deploy webhook**:
+A project's secret URL that starts a deploy when a Git host or CI system calls it.
+_Avoid_: Auto-deploy
+
+**Rollback**:
+Deploying an earlier Stack revision's commit and compose file with the current environment, recorded as a new revision.
+_Avoid_: Restore (reserved for correcting drift), revert
+
 **Tray type**:
 A service integration built into HQ, such as Purelymail or self-hosted Convex, that is either self-hosted or connected to an external provider. Shown in the UI by its service name.
 _Avoid_: Tray (for the built-in integration), plugin
@@ -38,7 +62,7 @@ One compose project running on one Porter, owned by either a project or a self-h
 _Avoid_: Project (for a compose project), app
 
 **Stack revision**:
-The file set and resolved environment that one deploy of a Stack runs. HQ stores every deployed revision for restore and rollback.
+The commit, compose file, and resolved environment that one deploy of a Stack runs. HQ stores every deployed revision.
 _Avoid_: Version, release
 
 **Machine check**:
