@@ -37,6 +37,7 @@ Each check reports one of these results: **Pass**, **Fail**, or **Unknown**. Dia
 | **Intrusion protection active** | fail2ban is running with the `sshd` jail enabled. |
 | **Automatic security updates** | `unattended-upgrades` is installed and enabled. |
 | **Time sync** | A time sync service is active and the clock reports as synchronized. |
+| **Rootless Docker** | The Docker daemon that Porter uses runs rootless. |
 
 The firewall check doesn't judge which ports are open. Deciding which ports should be open depends on the Admin's setup and on [Reverse proxy manager](https://github.com/getalfredo/alfredo/issues/10). The **Listening ports** diagnostic shows the open ports instead.
 
@@ -48,16 +49,19 @@ The firewall check doesn't judge which ports are open. Deciding which ports shou
 | **Reboot required** | Whether the host needs a reboot to finish applying updates. |
 | **Hostname** | The hostname, flagged when it looks like a provider default. |
 | **Listening ports** | Ports that listen on public interfaces, with their process and whether Docker publishes them. |
+| **Rootful Docker daemon** | Whether a rootful Docker daemon also runs on the host. |
 
-Docker writes its own iptables rules, so ports that a Stack publishes bypass ufw. The firewall check can pass while a published port is reachable from the internet. The **Listening ports** diagnostic marks Docker-published ports so that the Admin can see this gap.
+A rootful Docker daemon writes its own iptables rules, so the ports that it publishes bypass ufw. The firewall check can pass while such a port is reachable from the internet. The **Listening ports** diagnostic marks Docker-published ports so that the Admin can see this gap. Under rootless Docker, which is the default in the [Porter spec](porter.md#docker-mode), ufw applies to published ports, and the gap exists only for a rootful daemon that also runs on the host.
 
 System logging isn't a check, because journald is always on in Ubuntu 24.04.
 
 ## Privileges
 
-Machine checks run with Porter's normal privileges and don't require root. They read what an unprivileged user can read, such as sshd and ufw configuration files, service states, and time sync status.
+Machine checks run as Porter's non-root service user, as the [Porter spec](porter.md#privileges) describes. They read what an unprivileged user can read, such as configuration files, service states, and time sync status.
 
-When a check needs a fact that only root can read, the check reports **Unknown (needs root)** instead of guessing. Unknown doesn't count as Pass. [Porter privilege & blast-radius model](https://github.com/getalfredo/alfredo/issues/14) decides what Porter runs as, and it may raise check fidelity later. Machine checks alone aren't a reason to run Porter as root.
+Some facts are readable only by root, such as the effective sshd configuration, the live firewall state, and the fail2ban jail status. For those, the installer adds a sudoers file that lets the service user run a short, fixed list of read-only commands with fixed arguments. Porter has no other `sudo` rights.
+
+When a check can't read a fact, for example because the sudoers file is missing, the check reports **Unknown (needs root)** instead of guessing. Unknown doesn't count as Pass. Machine checks alone aren't a reason to run Porter as root.
 
 ## Remediation help
 
@@ -91,11 +95,10 @@ HQ doesn't run Machine checks itself. The HQ Porter, which every installation ha
 
 ## Handoff boundaries
 
-Implementation owns how each check reads its facts, the exact remediation commands, the wire format of results, and the heuristic for provider-default hostnames.
+Implementation owns how each check reads its facts, the exact commands in the read-only sudoers file, the exact remediation commands, the wire format of results, and the heuristic for provider-default hostnames.
 
 Other decisions cover the adjacent contracts:
 
 - [Install & upgrade flow for HQ and Porter](https://github.com/getalfredo/alfredo/issues/17): the install guide, including securing the host first, and replacing the first-run section of `docs/index.md`.
-- [Porter privilege & blast-radius model](https://github.com/getalfredo/alfredo/issues/14): what Porter runs as, and therefore which checks can report Unknown.
 - [Reverse proxy manager](https://github.com/getalfredo/alfredo/issues/10): which ports a host should expose.
 - [Unified dashboard](https://github.com/getalfredo/alfredo/issues/20): aggregating Machine check results and any alerting when a check starts failing.
