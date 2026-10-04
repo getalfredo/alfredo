@@ -44,7 +44,8 @@ The look of HQ follows variant A of the [HQ look prototype](https://github.com/g
 - **Project page:** a header with the source, the Porter, and the actions, then tabs. The **Overview** tab shows the last deploy with its phases, the services, the Routes, and one status card per Workspace.
 - **Workspace page:** its own page under the project, with the tabs that the Tray type defines.
 - **Status:** a colored dot next to a text label. Never show status by color alone.
-- **Theme:** light, as the prototype shows by default. Remove the animated background pattern from `index.css`.
+- **Theme:** light and dark, from the two token sets in `styles/globals.css`. HQ follows the system setting. Check every screen in both themes.
+- **Background:** plain. Remove the animated background pattern from `index.css`.
 
 The prototype is a reference for the look, not code to copy. Write each screen test-first against the specs.
 
