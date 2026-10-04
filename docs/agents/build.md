@@ -33,6 +33,21 @@ HQ and Porter exchange JSON text frames over the one WebSocket. See [ADR 0007](.
 
 To add or change a message, change all four in the same pull request: the fixture, the Zod schema, the Go struct, and the catalog entry.
 
+## HQ user interface
+
+The look of HQ follows variant A of the [HQ look prototype](https://github.com/getalfredo/alfredo/tree/prototype/hq-look/src/prototype/hq-look), agreed in [Initial look of HQ](https://github.com/getalfredo/alfredo/issues/44). To see it, check out the `prototype/hq-look` branch, run `bun run prototype:hq-look`, and open `/prototype/hq-look?variant=A`.
+
+- **Shell:** a persistent sidebar on the left. It holds **Dashboard**, the list of projects with a status dot each and **New project**, and an **Infrastructure** group with **Porters**, **Trays**, and **People** for Admins. The signed-in user sits at the bottom.
+- **Content:** a centered column of cards, built from the components in `hq/src/components/ui` and the color tokens in `styles/globals.css`.
+- **Dashboard:** the three sections of the dashboard spec, stacked. Projects are a grid of cards.
+- **Porter list:** one card per Porter, with its badges, usage meters, and a small chart.
+- **Project page:** a header with the source, the Porter, and the actions, then tabs. The **Overview** tab shows the last deploy with its phases, the services, the Routes, and one status card per Workspace.
+- **Workspace page:** its own page under the project, with the tabs that the Tray type defines.
+- **Status:** a colored dot next to a text label. Never show status by color alone.
+- **Theme:** light, as the prototype shows by default. Remove the animated background pattern from `index.css`.
+
+The prototype is a reference for the look, not code to copy. Write each screen test-first against the specs.
+
 ## Test levels
 
 Run every command from the repository root. A level passes when its command exits with status 0. On failure, each command must print enough for an agent to act on.
