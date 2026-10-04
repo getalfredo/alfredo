@@ -1,6 +1,6 @@
 # Users and collaboration
 
-Status: draft for final review of [Users & collaboration model](https://github.com/getalfredo/alfredo/issues/4).
+Status: agreed in [Users & collaboration model](https://github.com/getalfredo/alfredo/issues/4).
 
 ## Scope
 
