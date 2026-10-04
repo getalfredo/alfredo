@@ -2,11 +2,17 @@ import { authClient } from "./lib/auth-client";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
 import { ProjectDetail } from "./pages/ProjectDetail";
+import { CollaborationPrototype } from "./prototype/collaboration";
 import "./index.css";
 
 export function App() {
   const { data: session, isPending } = authClient.useSession();
   const path = window.location.pathname;
+
+  // PROTOTYPE - throwaway route, no sign-in needed. Never merge into main.
+  if (path === "/prototype/collaboration" && process.env.NODE_ENV !== "production") {
+    return <CollaborationPrototype />;
+  }
 
   if (isPending) {
     return (
