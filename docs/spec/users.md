@@ -29,7 +29,9 @@ Operator permissions apply to already configured services. They do not confer ge
 
 An Admin selects a project, invited email address, and Viewer or Operator role. Alfredo generates a single-use invitation link that expires after seven days. The Admin copies and sends the link; v1 does not require outgoing email for invitations.
 
-New invitees create an account with a password through the invitation. Existing account holders sign in with the invited email address to accept it. Public signup remains disabled. An invitation grants only its specified project role and cannot grant Admin access.
+An Invitation is for an email address that has no account. When the email address already has an account, the Admin adds the project membership directly, with no invitation and no acceptance step.
+
+New invitees create an account with a password through the invitation. If the invited email address gains an account before the link is used, the account holder signs in with that email address to accept it. Public signup remains disabled. An invitation grants only its specified project role and cannot grant Admin access.
 
 Admins can cancel pending invitations in the UI. Canceled, expired, or already consumed invitations cannot grant access.
 
@@ -47,4 +49,4 @@ Project authorization applies to project data and actions, including associated 
 
 ## Related decisions
 
-The collaboration UI decision will specify the invitation and membership screens using this model. Tray and deployment decisions will specify their concrete operations within these permission boundaries. This document does not define a storage schema or implement authentication changes.
+The [collaboration UI spec](collaboration-ui.md) specifies the invitation and membership screens using this model. Tray and deployment decisions will specify their concrete operations within these permission boundaries. This document does not define a storage schema or implement authentication changes.
