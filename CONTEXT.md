@@ -22,6 +22,17 @@ The Alfredo control center through which Admins and collaborators manage their i
 **Porter**:
 The Alfredo agent responsible for a managed machine. A Porter belongs to one HQ installation at a time.
 
+**HQ Porter**:
+The Porter on the HQ host. Every installation has one, and its Proxy serves HQ's own hostname.
+
+**Route**:
+A public hostname that points at one service of a Stack. It belongs to the Stack's owner and is served by the Stack's Porter.
+_Avoid_: Domain (reserved for mail domains in a Workspace), ingress
+
+**Proxy**:
+The component on a Porter that serves that Porter's Routes to the public. It is not a Stack.
+_Avoid_: Load balancer, gateway
+
 **Stack**:
 One compose project running on one Porter, owned by either a project or a self-hosted Workspace.
 _Avoid_: Project (for a compose project), app
