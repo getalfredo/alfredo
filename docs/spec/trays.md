@@ -113,6 +113,15 @@ Trays and Workspaces each move through **Setup**, **Active**, and **Removed**.
 - Removing a self-hosted Workspace asks whether to keep or delete its data volumes. The default is to keep them.
 - Removing a connected Workspace or Tray removes only Alfredo's records and stored connection. It never deletes anything at the provider unless the Admin takes a separate, explicit delete action.
 
+## V1 lineup
+
+V1 ships two Tray types, as agreed in [V1 Tray type lineup](https://github.com/getalfredo/alfredo/issues/19):
+
+- **Self-hosted Convex**, the self-hosted anchor.
+- **Purelymail**, the connected anchor.
+
+The two anchors cover both modes, so they prove the Tray model without further types. Analytics, payments, uptime, errors, support, other databases, queues, schedulers, and monitoring wait for a later release. Each added Tray type needs its provider's multi-tenancy and API verified first.
+
 ## Anchor: self-hosted Convex
 
 A Convex backend serves exactly one deployment, with one instance secret, admin key, and database. A Convex Tray is therefore a managed host on one Porter, and each Workspace is its own backend and dashboard container pair with its own volume and admin key.
