@@ -47,6 +47,14 @@ routes:
     port: 3000
 ```
 
+### Host access
+
+A project's Stack can't reach its Porter host beyond its own containers unless an Admin turns on **Allow host access** for the project. With the setting off, a deploy fails when the compose file requests host-reaching settings, as the [compose spec](compose.md#host-access) lists. The setting is stored as `hostAccess: true` in `project.yml`.
+
+Without the setting, someone who can push to the project's branch gets code that runs in the project's containers with the project's environment. With the setting, that person gets control of the Porter's service user, and so of every other Stack on that Porter.
+
+The confirmation dialog says so. When the Porter uses a rootful Docker daemon, the dialog says that the Stack gets root on that host. For a project on the HQ Porter with a rootful daemon, it adds that the Stack can read every secret in the installation.
+
 ## Sources
 
 A source is always a Git repository: a URL, a branch, and one of two kinds. V1 doesn't accept uploaded archives or paths on the HQ host. An app that only runs published images is a repository that contains only a compose file.
@@ -155,6 +163,7 @@ These actions follow the [users spec](users.md):
 | View deploy phases, output, operation log, and the deployed compose file | Viewer |
 | **Deploy**, **Redeploy**, and **Roll back** | Operator |
 | Create or remove a project, change its source, release command, or variables | Admin |
+| Turn **Allow host access** on or off | Admin |
 | View or regenerate the deploy key and deploy webhook | Admin |
 
 ## Removing a project
