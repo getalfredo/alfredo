@@ -30,7 +30,9 @@ The `bunqueue` action queue, `config.yaml` directory scanning, and the "Create S
 
 ## Layout on Porter
 
-Porter stores each Stack under its own data directory, by default `~/.alfredo-porter/stacks/<stack-id>/`. A flag can change that location. The directory holds the revision's files and its `.env` file, written with `0600` permissions. Storing Stacks doesn't require root. Porter's execution privileges belong to [Porter privilege & blast-radius model](https://github.com/getalfredo/alfredo/issues/14).
+Porter stores each Stack under its own data directory, by default `~/.alfredo-porter/stacks/<stack-id>/`. A flag can change that location. The directory holds the revision's files and its `.env` file, written with `0600` permissions. Storing Stacks doesn't require root. The [Porter spec](porter.md#privileges) defines what Porter runs as.
+
+Containers can write files into a Stack directory through bind mounts, and those files can belong to other user IDs than Porter's service user. Porter removes a Stack directory through Docker's own tooling, so removal never needs root.
 
 The compose project name is `alfredo-<stack-id>`, and Porter labels every container, network, volume, and image it creates. Porter manages only labelled resources. It ignores compose projects that Alfredo didn't create, and v1 has no discovery or import of existing compose projects.
 
@@ -52,6 +54,20 @@ Roles follow the [users spec](users.md): Operators deploy, roll back, and contro
 
 A failed validation stops a deploy before it touches running containers.
 
+## Host access
+
+By default, a Stack can't reach the Porter host beyond its own containers. During validation, Porter checks the normalized output of `docker compose config` and fails the deploy when any service requests one of these settings:
+
+- Privileged mode, added capabilities, or host devices.
+- Host mode for the network, PID, IPC, or user namespace.
+- A bind mount of a path outside the Stack directory, including the Docker socket.
+
+Bind mounts inside the Stack directory are always allowed, so a Stack can mount configuration files from its own source. The error names the service and the setting.
+
+An Admin can turn on **Allow host access** for a project, as the [projects spec](projects.md#host-access) describes. HQ sends that setting with the operation, and Porter then skips the check. Tray templates go through the same check, and no v1 Tray type requests host access.
+
+The check protects a Porter host from the people who can push to a project's repository. It isn't a sandbox, and it doesn't defend against a compromised HQ, because HQ sends the setting. See the [accepted risk](porter.md#accepted-risk) in the Porter spec.
+
 ## Builds and images
 
 Builds run on the Porter that runs the Stack. The image stays in that host's local Docker image store, so v1 needs no registry. Build output streams to HQ like any other operation output. Remote builders and registries aren't part of v1.
@@ -72,11 +88,10 @@ Porter compares each Stack directory with its deployed revision and reports chan
 
 ## Handoff boundaries
 
-Implementation owns the wire format of operations, the revision identifier, the auxiliary-file size cap, the drift-check mechanics, how Porter reports only changed status, log tail defaults, and the image retention count.
+Implementation owns the exact list of settings in the host access check, the wire format of operations, the revision identifier, the auxiliary-file size cap, the drift-check mechanics, how Porter reports only changed status, log tail defaults, and the image retention count.
 
 Other decisions cover the adjacent contracts:
 
 - [Projects & deploy flow](https://github.com/getalfredo/alfredo/issues/11): project sources, source checkout on the Porter, Railpack settings, the generated compose file's options, Stack placement, and rollback.
 - [Reverse proxy manager](https://github.com/getalfredo/alfredo/issues/10): routing Stack services to hostnames.
-- [Porter privilege & blast-radius model](https://github.com/getalfredo/alfredo/issues/14): what Porter runs as, and the wider command-surface decision.
 - [Install & upgrade flow for HQ and Porter](https://github.com/getalfredo/alfredo/issues/17): installing Docker, Railpack, and BuildKit on Porter hosts.

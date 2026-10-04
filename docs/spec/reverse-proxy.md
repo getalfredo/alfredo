@@ -30,6 +30,8 @@ The HQ Porter is a normal Porter labeled **HQ host**. It runs Machine checks, an
 
 An Admin sets **HQ hostname** in HQ settings. The HQ Porter's Proxy then serves a built-in **HQ route** from that hostname to HQ's local port, and HQ switches to secure cookies. Before the HQ hostname is set, the Admin finishes first-run setup at `http://<ip>:<port>`.
 
+The Proxy reaches HQ through the host's own address, not through loopback. Rootless Docker keeps containers away from the host's loopback interface, and opening it would expose every loopback service on the host to every container.
+
 HQ keeps listening on its own port after the HQ hostname is set. The install guide tells the Admin to close that port in the host firewall, and the **Listening ports** diagnostic in the [machine ops spec](machine-ops.md) shows whether it's still open.
 
 ## Routes
@@ -125,6 +127,14 @@ Porter creates one Docker network for its Proxy, such as `alfredo-proxy`, and at
 
 Routed services need no `ports:` entry, so routing doesn't create published ports that bypass ufw. HQ doesn't rewrite a Stack's own `ports:` entries. On a Porter with **Public routes** on, a deploy fails validation if the Stack publishes port 80 or 443, before it touches running containers.
 
+## Ports 80 and 443
+
+Under rootless Docker, the installer grants the right to bind ports below 1024, and it sets up the daemon so that the Proxy sees real client IP addresses. Both need root once, as [the rootless Docker ADR](../adr/0006-rootless-docker-by-default.md) describes.
+
+ufw applies to the Proxy's ports in rootless mode. On a host with ufw active, the Admin has to allow ports 80 and 443 before Routes work. HQ shows the two commands when the Admin turns on **Public routes**, and HQ never runs them.
+
+If the Proxy can't bind a port, for example because another process holds port 80, Porter reports the error with the process that holds the port. Porter then recreates the Proxy container on the next attempt and doesn't restart the failed one, because a container that failed to bind can come back with no network and no error.
+
 ## Applying changes
 
 Route changes apply on save; they don't wait for a deploy, because a Caddy reload doesn't restart the application. If a routed service isn't attached to the proxy network yet, Porter attaches it without a restart. Deploys also attach routed services.
@@ -140,6 +150,5 @@ Implementation owns the Caddy configuration format and reload mechanics, the Pro
 Other decisions cover the adjacent contracts:
 
 - [Projects & deploy flow](https://github.com/getalfredo/alfredo/issues/11): where Stacks run, and therefore which Porter serves each Route, plus any environment-specific hostnames.
-- [Install & upgrade flow for HQ and Porter](https://github.com/getalfredo/alfredo/issues/17): installing the HQ Porter and Docker on the HQ host, and the firewall guidance for ports 80, 443, and HQ's own port.
-- [Porter privilege & blast-radius model](https://github.com/getalfredo/alfredo/issues/14): what Porter runs as. The Proxy needs only Docker access, not root.
+- [Install & upgrade flow for HQ and Porter](https://github.com/getalfredo/alfredo/issues/17): installing the HQ Porter and rootless Docker on the HQ host, the port grant, and the firewall guidance for ports 80, 443, and HQ's own port.
 - [Unified dashboard](https://github.com/getalfredo/alfredo/issues/20): showing Route and certificate problems across projects, and any alerting on certificate or DNS failures.

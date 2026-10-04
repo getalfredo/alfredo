@@ -65,6 +65,14 @@ _Avoid_: Project (for a compose project), app
 The commit, compose file, and resolved environment that one deploy of a Stack runs. HQ stores every deployed revision.
 _Avoid_: Version, release
 
+**Operation**:
+One named action from Porter's fixed catalog, such as a deploy or a Machine check run, that HQ asks a Porter to perform. HQ can't ask a Porter for anything outside the catalog.
+_Avoid_: Command, script, job
+
+**Host access**:
+A project's permission for its Stack to reach the Porter's host beyond the Stack's own containers. It's off unless an Admin grants it.
+_Avoid_: Privileged mode, root access
+
 **Machine check**:
 One audited fact about the host a Porter runs on, such as whether SSH password authentication is disabled. Machine checks report; they never change the host.
 _Avoid_: Hardening (for the check itself), health check (reserved for services)

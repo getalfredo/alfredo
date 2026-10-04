@@ -10,7 +10,7 @@ HQ runs as a dedicated non-root service user. Its data directory has `0700` perm
 
 Whoever controls the HQ host, as root or as the HQ service user, has every secret in the installation. A copy of the data directory is a copy of every secret, so backups need the same protection as the host.
 
-A Porter host holds only the environments of the Stacks it runs. [Porter privilege & blast-radius model](https://github.com/getalfredo/alfredo/issues/14) owns that boundary.
+A Porter host holds only the environments of the Stacks it runs. Porter's service user can read all of them. On the HQ host, Porter runs as a different user than HQ, so a Stack on the HQ Porter can't read HQ's data directory unless that Porter uses a rootful Docker daemon and the project has host access. The [Porter spec](porter.md#accepted-risk) states what a compromise of HQ or of a Porter host gets.
 
 ## Credentials that HQ only verifies
 
