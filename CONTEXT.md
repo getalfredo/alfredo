@@ -99,4 +99,4 @@ _Avoid_: Admin (for project-scoped operation)
 A collaborator's access to one project, carrying either the Viewer or Operator role independently of their roles in other projects.
 
 **Invitation**:
-An Admin-issued offer of project membership bound to an email address and project role. Its single-use acceptance link expires after seven days and can be canceled by an Admin.
+An Admin-issued offer of project membership bound to an email address without an account and a project role. Its single-use acceptance link expires after seven days and can be canceled by an Admin.

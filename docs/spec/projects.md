@@ -178,4 +178,4 @@ Other decisions cover the adjacent contracts:
 
 - [Unified dashboard](https://github.com/getalfredo/alfredo/issues/20): showing deploy status across projects, and any alerting on failed deploys.
 - [Security model: secret protection & integration credential lifecycle](https://github.com/getalfredo/alfredo/issues/12): protecting deploy keys and variables at rest.
-- [Collaboration UI: invitations and project membership](https://github.com/getalfredo/alfredo/issues/15): the membership screens around a project.
+- [Collaboration UI](collaboration-ui.md): the membership screens around a project.
