@@ -22,6 +22,14 @@ The Alfredo control center through which Admins and collaborators manage their i
 **Porter**:
 The Alfredo agent responsible for a managed machine. A Porter belongs to one HQ installation at a time.
 
+**Stack**:
+One compose project running on one Porter, owned by either a project or a self-hosted Workspace.
+_Avoid_: Project (for a compose project), app
+
+**Stack revision**:
+The file set and resolved environment that one deploy of a Stack runs. HQ stores every deployed revision for restore and rollback.
+_Avoid_: Version, release
+
 **Admin**:
 An installation-wide role responsible for infrastructure and project membership.
 _Avoid_: Operator (for installation-wide administration)
