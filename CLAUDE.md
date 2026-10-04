@@ -11,3 +11,7 @@ Default vocabulary — label strings equal the five canonical role names (`needs
 ### Domain docs
 
 Single-context layout — `CONTEXT.md` and `docs/adr/` at the repo root, created lazily. See `docs/agents/domain.md`.
+
+### Build conventions
+
+Repository layout, message format, test levels, and the merge gate. Read before any build work. See `docs/agents/build.md`.
