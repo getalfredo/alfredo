@@ -102,7 +102,7 @@ For each Workspace, a Tray type provides:
 
 A Tray provides the same metrics and warnings at Tray level, such as account credit.
 
-HQ polls this data at an interval each Tray type sets. The contract carries current values only, without history. Historical charts belong to the unified dashboard decision, and push notifications belong to alerting.
+HQ polls this data at an interval each Tray type sets. The contract carries current values. A Tray type can mark a numeric metric as recorded, and HQ then keeps its history, as the [dashboard spec](dashboard.md#history) describes. V1 sends no push notifications.
 
 ## Lifecycle
 

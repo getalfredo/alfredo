@@ -34,7 +34,7 @@ The ID identifies a Porter; it is not itself an authentication credential. Share
 
 Porter sends a heartbeat every 10 seconds. HQ displays Offline after 30 seconds without a heartbeat and shows the last-seen timestamp. This status describes connectivity, separately from the health of services on the machine.
 
-Each heartbeat includes CPU usage, memory usage, and disk usage. The Porter dashboard shows current values. Historical charts are not part of this agreed baseline; their scope remains a separate decision.
+Each heartbeat includes the host's CPU usage, memory usage, and disk usage, and the CPU and memory usage of each service in the Porter's Stacks. HQ shows current values and records history, as the [dashboard spec](dashboard.md#history) describes.
 
 ## Operations and disconnection
 
