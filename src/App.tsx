@@ -2,11 +2,17 @@ import { authClient } from "./lib/auth-client";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
 import { ProjectDetail } from "./pages/ProjectDetail";
+import { HqLookPrototype } from "./prototype/hq-look";
 import "./index.css";
 
 export function App() {
   const { data: session, isPending } = authClient.useSession();
   const path = window.location.pathname;
+
+  // PROTOTYPE - throwaway route, no sign-in needed. Never merge into main.
+  if (path === "/prototype/hq-look" && process.env.NODE_ENV !== "production") {
+    return <HqLookPrototype />;
+  }
 
   if (isPending) {
     return (
