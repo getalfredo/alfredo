@@ -4,6 +4,12 @@ Alfredo organizes projects and their services for an administrator and invited c
 
 ## Language
 
+**HQ**:
+The Alfredo control center through which Admins and collaborators manage their installation's projects and services.
+
+**Porter**:
+The Alfredo agent responsible for a managed machine. A Porter belongs to one HQ installation at a time.
+
 **Admin**:
 An installation-wide role responsible for infrastructure and project membership.
 _Avoid_: Operator (for installation-wide administration)
